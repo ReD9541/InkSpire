@@ -27,7 +27,7 @@ A minimal React Native Expo App with AppWrite to share and complete and share Ar
 
 ```bash
 # 1. Clone the project
-git clone https://github.com/your-username/expo-appwrite-starter.git
+git clone https://github.com/ReD9541/InkSpire.git
 cd inkspire
 
 # 2. Install dependencies

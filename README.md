@@ -2,6 +2,8 @@
 
 A minimal React Native Expo App with AppWrite to share and complete and share Art challanges.
 
+
+- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
 ---
 
 ## Features

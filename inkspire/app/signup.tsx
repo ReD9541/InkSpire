@@ -1,10 +1,11 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-export default function register(props: any){
+import {View, Text, StyleSheet} from 'react-native';
+
+export default function SignupScreen(props:any) {
     return(
         <View style={styles.container}>
-            <Text style={styles.title}>Register Screen</Text>
-        </View>)
+            <Text style={styles.title}>Signup Screen</Text>
+        </View>
+    )
 }
 
 const styles = StyleSheet.create({

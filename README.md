@@ -91,12 +91,17 @@ app/
         ├── splash-icon-dark.png
         └── splash-icon.png
 
-
-
 ```
 
-
 ##  Setup
+https://streamable.com/qbtdtw
+
+TO REPLICATE
+https://github.com/ReD9541/InkSpire
+
+
+Copy the config file in a config folder right next to app subfolder
+download and extract this |https://drive.google.com/drive/folders/1Wb3Vm1QV7bdrFoa9wtrIK1wPRjcRPYg3?usp=drive_link|
 
 ```bash
 # 1. Clone the project

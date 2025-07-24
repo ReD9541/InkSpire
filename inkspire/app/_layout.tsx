@@ -3,9 +3,10 @@ import { DarkTheme,DefaultTheme, ThemeProvider } from '@react-navigation/native'
 import'react-native-reanimated';
 import { useFonts } from 'expo-font';
 import { StatusBar } from 'expo-status-bar';
-
-import { useColorScheme } from 'react-native';
+import { useState } from 'react';
+import { useColorScheme } from '@/hooks/useColorScheme';
 import { AuthContext } from '@/contexts/AuthContext';
+import { account } from '@/lib/appwrite';
 
 
 
@@ -26,6 +27,7 @@ export default function RootLayout() {
         <Stack>
           <Stack.Screen name="index" options={{ headerShown: false }} />
           <Stack.Screen name="login" options={{ headerShown: false }} />
+          <Stack.Screen name="register" options={{ headerShown: false }} />
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />
         </Stack>

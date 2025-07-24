@@ -1,9 +1,17 @@
-import React from "react";
+import React, { useContext } from "react";
 import { StyleSheet, View, Pressable, Text, Image } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import { router } from "expo-router";
+import { AuthContext } from "@/contexts/AuthContext";
 
 export default function Settings() {
+      const user = useContext(AuthContext)
+
+    const signOut = async () => {
+        await user.deleteSession("current")
+        router.navigate("/login")
+    }
   return (
     <ThemedView style={styles.container}>
       <View style={styles.header}>
@@ -30,7 +38,8 @@ export default function Settings() {
         <Text style={styles.settingText}>Account Settings</Text>
       </Pressable>
 
-      <Pressable style={[styles.settingItem, styles.logoutItem]}>
+      <Pressable onPress={ () => signOut()}
+       style={[styles.settingItem, styles.logoutItem]}>
         <Text style={styles.logoutText}>Log Out</Text>
       </Pressable>
     </ThemedView>

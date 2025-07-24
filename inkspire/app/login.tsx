@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     fontSize: 16,
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: "#C08EFF",
   },
   rememberRow: {
     flexDirection: "row",
@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderWidth: 1,
-    borderColor: "#333",
+    borderColor: "#C08EFF",
     marginRight: 10,
     borderRadius: 4,
     justifyContent: "center",
@@ -190,11 +190,11 @@ const styles = StyleSheet.create({
   },
 
   checkedCheckbox: {
-    backgroundColor: "#2e86de",
+    backgroundColor: "#fff",
   },
 
   checkmark: {
-    color: "#fff",
+    color: "#C08EFF",
     fontSize: 16,
   },
 
@@ -221,8 +221,7 @@ const styles = StyleSheet.create({
   },
   secondaryButton: {
     flex: 1,
-    borderWidth: 1,
-    borderColor: "#111",
+    backgroundColor:"#B394D9",
     paddingVertical: 12,
     borderRadius: 30,
     alignItems: "center",

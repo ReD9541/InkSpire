@@ -207,8 +207,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   checkboxCircleChecked: {
-    backgroundColor: "#111",
-    borderColor: "#111",
+    backgroundColor: "#C08EFF",
+    borderColor: "#999",
   },
   labelText: {
     fontSize: 14,
@@ -250,8 +250,7 @@ const styles = StyleSheet.create({
   },
   secondaryButton: {
     flex: 1,
-    borderWidth: 1,
-    borderColor: "#111",
+    backgroundColor:"#C08EFF",
     borderRadius: 25,
     paddingVertical: 12,
     marginRight: 8,
@@ -264,7 +263,7 @@ const styles = StyleSheet.create({
   },
   primaryButton: {
     flex: 1,
-    backgroundColor: "#111",
+    backgroundColor:"#B394D9",
     borderRadius: 25,
     paddingVertical: 12,
     marginLeft: 8,

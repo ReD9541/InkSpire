@@ -58,7 +58,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 40,
   },
   button: {
-    backgroundColor: '#4CAF50', 
+    backgroundColor: '#C08EFF', 
     paddingVertical: 15,
     paddingHorizontal: 60,
     borderRadius: 30,
@@ -78,7 +78,7 @@ export const styles = StyleSheet.create({
     fontSize: 16,
   },
   signInButton: {
-    color: '#4CAF50', 
+    color: '#C08EFF', 
     fontSize: 16,
     fontWeight: 'bold',
     marginLeft: 5,

@@ -2,34 +2,37 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useNavigation } from 'expo-router';
 import { Link } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import { ThemedView } from '@/components/ThemedView';
+import { ThemedText } from '@/components/ThemedText';
 
 export default function landing() {
   const navigation = useNavigation();
 
   return (
-    <View style={styles.container}>
+    <ThemedView style={styles.container}>
       <Image
         source={require('../assets/images/InkSpire_logo.png')} 
         style={styles.logo}
       />
 
-      <Text style={styles.description}>
+      <ThemedText style={styles.description}>
         A Community Built for Artists Like You.
-      </Text>
+      </ThemedText>
 
       <Link href="/register" asChild>
         <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>Join Now</Text>
+          <ThemedText style={styles.buttonText}>Join Now</ThemedText>
         </TouchableOpacity>
       </Link>
 
       <View style={styles.signInContainer}>
-        <Text style={styles.signInText}>Already have an account?</Text>
+        <ThemedText style={styles.signInText}>Already have an account?</ThemedText>
         <Link href="/login">
-          <Text style={styles.signInButton}>Sign In</Text>
+          <ThemedText style={styles.signInButton}>Sign In</ThemedText>
         </Link>
       </View>
-    </View>
+    </ThemedView>
   );
 }
 

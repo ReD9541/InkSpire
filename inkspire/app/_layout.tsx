@@ -1,15 +1,36 @@
 import { Stack } from 'expo-router';
+import { DarkTheme,DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import'react-native-reanimated';
+import { useFonts } from 'expo-font';
+import { StatusBar } from 'expo-status-bar';
+
+import { useColorScheme } from 'react-native';
+import { AuthContext } from '@/contexts/AuthContext';
+
+
 
 export default function RootLayout() {
-  return (
-    <Stack>
-      <Stack.Screen name="index" options={{ headerShown: false }} />
-      
+  const colorScheme = useColorScheme();
+  const [loaded] = useFonts({
+    SpaceMono: require('../assets/fonts/RobotoMono-SemiBold.ttf'),
+  });
 
-      <Stack.Screen name="login" options={{ headerShown: false }} /> 
-      <Stack.Screen name="register" options={{ headerShown: false }} /> 
-      
-      <Stack.Screen name="posts" options={{ headerShown: false }} />
-    </Stack>
+  if (!loaded) {
+    // Async font loading only occurs in development.
+    return null;
+  }
+
+  return (
+    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      <AuthContext.Provider value={account}>
+        <Stack>
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="login" options={{ headerShown: false }} />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="+not-found" />
+        </Stack>
+        <StatusBar style="auto" />
+      </AuthContext.Provider>
+    </ThemeProvider>
   );
 }

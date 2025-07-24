@@ -1,10 +1,13 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { ThemedView } from '@/components/ThemedView';
+import { ThemedText } from '@/components/ThemedText';
+
 export default function register(props: any){
     return(
-        <View style={styles.container}>
-            <Text style={styles.title}>Register Screen</Text>
-        </View>)
+        <ThemedView style={styles.container}>
+            <ThemedText style={styles.title}>Register Screen</ThemedText>
+        </ThemedView>)
 }
 
 const styles = StyleSheet.create({

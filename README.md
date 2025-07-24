@@ -2,8 +2,8 @@
 
 A minimal React Native Expo App with AppWrite to share and complete and share Art challanges.
 
-
 - [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
+
 ---
 
 ## Features
@@ -15,64 +15,87 @@ A minimal React Native Expo App with AppWrite to share and complete and share Ar
 
 ---
 
-##  Prerequisites
+## Prerequisites
 
 - [Node.js](https://nodejs.org/)
 - [Expo](https://docs.expo.dev/get-started/installation/)
-- An [Appwrite](https://appwrite.io/) instance 
+- An [Appwrite](https://appwrite.io/) instance
 
 ---
 
-# Project Structure
+## Project Structure
 
 ```markdown
-
 app/
 │
-├── _layout.tsx               # Root layout (includes stack + tabs)
-├── index.tsx                 # Splash screen (default route)
-├── landing.tsx               # Splash landing screen
-├── login.tsx                 # Sign In screen
-├── register.tsx              # Sign Up screen
+├── _layout.tsx               # Root stack layout 
+├── +not-found.tsx           # 404 fallback page
+├── index.tsx                # Splash screen (entry point)
+├── login.tsx                # Login screen
+├── register.tsx             # Registration screen
+├── post.tsx                 # Post details screen
 │
-├── post.tsx                  # Post detail screen 
+├── tabs/                    # Tab navigation screens
+│   ├── _layout.tsx          # Bottom tab layout
+│   ├── create.tsx           # Create post screen
+│   ├── index.tsx            # Home Screen
+│   ├── profile.tsx          # User profile screen
+│   └── settings.tsx         # User settings screen
 │
-├── tabs/                     # Tab-based navigation routes
-│   ├── _layout.tsx           # Tab layout (bottom tab navigator)
-│   ├── home.tsx              # Home screen (prompts + feed)
-│   ├── create.tsx            # Create Post screen
-│   ├── profile.tsx           # Profile screen
-│   └── settings.tsx          # Settings screen
+├── app-example/             # (template app structure)
 │
-├── components/              # Shared, reusable components
-│   ├── PostCard.tsx         # UI for post previews
-│   ├── PromptCard.tsx       # UI for today's prompt
-│   ├── ChallengeCarousel.tsx# Monthly challenge scroller
-│   ├── ProfileImage.tsx     # Reusable profile image
-│   ├── Button.tsx           # Reusable button
-│   ├── InputField.tsx       # Reusable input field
-│   └── ui/                  # Additional shared UI elements
+├── components/              # Shared reusable components
+│   ├── Collapsible.tsx
+│   ├── ExternalLink.tsx
+│   ├── HapticTab.tsx
+│   ├── HelloWave.tsx
+│   ├── ParallaxScrollView.tsx
+│   ├── ThemedText.tsx
+│   ├── ThemedView.tsx
+│   └── ui/                  # UI-focused components 
 │       ├── ThemedText.tsx
 │       ├── ThemedView.tsx
-│       └── HapticTab.tsx    # (or similar enhancements)
+│       └── HapticTab.tsx
 │
-├── constants/               # Static data/constants
-│   ├── Colors.ts            # Theme colors
-│   └── prompts.ts           # Monthly challenge names, example prompts
+├── config/                  # Configuration data
+│   └── Config.ts
 │
-├── hooks/                   # Custom React hooks
-│   ├── useThemeColor.ts     # Hook for theme colors
-│   └── useColorScheme.ts    # Light/dark mode
+├── constants/               # Static constants and data
+│   ├── Colors.ts
+│   └── prompts.ts
+│
+├── contexts/                # React context
+│
+├── hooks/                   # Custom hooks
+│   ├── useThemeColor.ts
+│   └── useColorScheme.ts
 │
 ├── utils/                   # Utility/helper functions
-│   └── validations.ts       # Form validation logic
+│   └── validations.ts
 │
-└── assets/                  # Fonts, images, SVGs, etc.
+└── assets/                  # Fonts, images, icons
+    ├── fonts/
+    │   ├── BagelFatOne-Regular.ttf
+    │   ├── RobotoMono-SemiBold.ttf
+    │   ├── Sen-VariableFont_wght.ttf
+    │   ├── SpaceMono-Regular.ttf
+    │   ├── Wittgenstein-Italic-VariableFont_wght.ttf
+    │   └── Wittgenstein-VariableFont_wght.ttf
+    └── images/
+        ├── adaptive-icon.png
+        ├── favicon.png
+        ├── icon.png
+        ├── InkSpire_logo.png
+        ├── react-logo@2x.png
+        ├── react-logo@3x.png
+        ├── splash-icon-dark.png
+        └── splash-icon.png
+
+
 
 ```
 
-
-##  Setup
+## Setup
 
 ```bash
 # 1. Clone the project

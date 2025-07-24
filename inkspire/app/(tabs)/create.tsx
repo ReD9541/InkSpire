@@ -7,7 +7,7 @@ export default function create() {
     <ThemedView style={styles.container}>
       <ThemedText style={styles.title}>Create a Post</ThemedText>
       <Image
-        source={require('../assets/images/InkSpire_logo.png')} 
+        source={require('../../assets/images/InkSpire_logo.png')} 
         style={styles.logo}
       />
       {/* Additional form elements would go here */}

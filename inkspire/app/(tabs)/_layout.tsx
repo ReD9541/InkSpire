@@ -8,6 +8,7 @@ import { Ionicons } from "@expo/vector-icons";
 import TabBarBackground from "@/components/ui/TabBarBackground";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -52,6 +53,14 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => (
             <Ionicons size={28} name="person-circle" color={color} />
           ),
+        }}
+      />
+      <Tabs.Screen
+        name="create"
+        options={{
+          title: "Create",
+          tabBarIcon: ({ color }) => (
+<FontAwesome name="pencil-square-o" size={24} color={color} />          ),
         }}
       />
     </Tabs>

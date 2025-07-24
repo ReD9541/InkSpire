@@ -15,6 +15,7 @@ import { ValidIndicator } from "@/components/ui/ValidIndicator";
 import { ID } from "react-native-appwrite";
 import React from "react";
 import { account } from "@/lib/appwrite";
+import { useUser } from "@/contexts/UserContext";
 
 export default function register(props: any) {
   const [email, setEmail] = useState<string>("");
@@ -34,22 +35,22 @@ export default function register(props: any) {
     validEmail && validPassword && passwordsMatch && acceptedTnC;
   const register = async () => {
     try {
-    // sign up with unique id, email, password, and name metadata
-  await account.create(ID.unique(), email, password, name);
+      // sign up with unique id, email, password, and name metadata
+      await account.create(ID.unique(), email, password, name);
 
-    // create a session after registration
-    const session = await user.createEmailPasswordSession(email, password);
-    setAuth(session);
-  } catch (error) {
-    console.error('Registration failed:', error);
-    };
-  }
-  
-    useEffect(() => {
-      if (auth) {
-        router.navigate("/(tabs)");
-      }
-    }, [auth]);
+      // create a session after registration
+      const session = await user.createEmailPasswordSession(email, password);
+      setAuth(session);
+    } catch (error) {
+      console.error("Registration failed:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (auth) {
+      router.navigate("/(tabs)");
+    }
+  }, [auth]);
 
   //const user = useUser()
   //console.log(user)
@@ -90,7 +91,10 @@ export default function register(props: any) {
       </View>
 
       <View style={styles.form}>
-        <ThemedText style={styles.labelText}>Link Email</ThemedText>
+        <View style={styles.labelRow}>
+          <ThemedText style={styles.labelText}>Email</ThemedText>
+          <ValidIndicator valid={validEmail} />
+        </View>
         <TextInput
           style={styles.input}
           placeholder="Enter Email"
@@ -101,12 +105,15 @@ export default function register(props: any) {
         <ThemedText style={styles.labelText}>Username</ThemedText>
         <TextInput
           style={styles.input}
-          placeholder="Creaete Username"
+          placeholder="Create Username"
           value={name}
           onChangeText={setName}
         />
 
-        <ThemedText style={styles.labelText}>Password</ThemedText>
+        <View style={styles.labelRow}>
+          <ThemedText style={styles.labelText}>Password</ThemedText>
+          <ValidIndicator valid={validPassword} />
+        </View>
         <TextInput
           style={styles.input}
           placeholder="Create Password"

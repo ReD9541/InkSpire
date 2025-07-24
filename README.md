@@ -90,12 +90,23 @@ app/
         ├── react-logo@3x.png
         ├── splash-icon-dark.png
         └── splash-icon.png
+<<<<<<< HEAD
 
 
 
 ```
 
 ## Setup
+=======
+
+```
+
+##  Setup
+https://streamable.com/qbtdtw
+
+Copy the config file in a config folder right next to app subfolder
+download and extract this |https://drive.google.com/drive/folders/1Wb3Vm1QV7bdrFoa9wtrIK1wPRjcRPYg3?usp=drive_link |
+>>>>>>> 8678c75899d3b3977b2a0f7d50196c27e649b72e
 
 ```bash
 # 1. Clone the project

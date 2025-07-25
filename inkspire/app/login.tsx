@@ -24,14 +24,14 @@ export default function Login() {
 
   const user = useContext(AuthContext);
 
-  const login = async () => {
-    try {
-      const session = await user.get();
-      setAuth(session);
-    } catch (error: any) {
-      console.log(error);
-    }
-  };
+const login = async () => {
+  try {
+    await user.createEmailSession(email, password);
+    setAuth(await user.get());
+  } catch (error: any) {
+    console.log("Login failed:", error.message || error);
+  }
+};
 
   useEffect(() => {
     if (auth) {

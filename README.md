@@ -105,7 +105,6 @@ download and extract this |https://drive.google.com/drive/folders/1Wb3Vm1QV7bdrF
 ```bash
 # 1. Clone the project
 git clone https://github.com/ReD9541/InkSpire.git
-cd inkspire
 
 # 2. Install dependencies
 npm install

@@ -1,18 +1,17 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  Pressable,
-  Image,
-} from "react-native";
-import { useState, useEffect, useContext } from "react";
-import { ValidIndicator } from "@/components/ui/ValidIndicator";
-import { router, Link } from "expo-router";
-import { AuthContext } from "@/contexts/AuthContext";
-import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
-import React from "react";
+import { ThemedView } from "@/components/ThemedView";
+import { ValidIndicator } from "@/components/ui/ValidIndicator";
+import { AuthContext } from "@/contexts/AuthContext";
+import { Link, router } from "expo-router";
+import { useContext, useEffect, useState } from "react";
+import {
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 
 export default function Login() {
   const [email, setEmail] = useState("");

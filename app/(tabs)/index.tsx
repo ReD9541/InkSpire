@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from "react";
-import { StyleSheet, View, FlatList, Dimensions, Image } from "react-native";
-import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
-import { databases } from "@/lib/appwrite";
-import { ID, Query } from "react-native-appwrite";
+import { ThemedView } from "@/components/ThemedView";
 import {
   CHALLENGES_COLLECTION_ID,
   DATABASE_ID,
   PROMPTS_COLLECTION_ID,
 } from "@/config/Config";
+import { databases } from "@/lib/appwrite";
+import React, { useEffect, useState } from "react";
+import { Dimensions, FlatList, Image, StyleSheet, View } from "react-native";
+import { Query } from "react-native-appwrite";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -100,7 +100,7 @@ export default function HomeScreen() {
       </View>
 
       <View style={styles.leftPanel}>
-        <ThemedText style={styles.sectionTitle}>Today's Prompt</ThemedText>
+        <ThemedText style={styles.sectionTitle}>Today&#39;s Prompt</ThemedText>
         <View style={styles.promptBox}>
           <ThemedText style={styles.promptText}>
             {prompt ?? "Loading..."}

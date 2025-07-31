@@ -1,14 +1,14 @@
-import { Tabs } from "expo-router";
-import React from "react";
-import { Platform } from "react-native";
-import AntDesign from '@expo/vector-icons/AntDesign';
 import { HapticTab } from "@/components/HapticTab";
 import { IconSymbol } from "@/components/ui/IconSymbol";
-import { Ionicons } from "@expo/vector-icons";
 import TabBarBackground from "@/components/ui/TabBarBackground";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { Ionicons } from "@expo/vector-icons";
+import AntDesign from '@expo/vector-icons/AntDesign';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { Tabs } from "expo-router";
+import React from "react";
+import { Platform } from "react-native";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -60,7 +60,7 @@ export default function TabLayout() {
         options={{
           title: "Create",
           tabBarIcon: ({ color }) => (
-<FontAwesome name="pencil-square-o" size={24} color={color} />          ),
+            <FontAwesome name="pencil-square-o" size={24} color={color} />),
         }}
       />
     </Tabs>

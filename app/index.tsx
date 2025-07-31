@@ -1,13 +1,10 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
-import { useNavigation } from 'expo-router';
-import { Link } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
+import { ThemedView } from '@/components/ThemedView';
+import { Link } from 'expo-router';
+import React from 'react';
+import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 export default function landing() {
-  const navigation = useNavigation();
 
   return (
     <ThemedView style={styles.container}>

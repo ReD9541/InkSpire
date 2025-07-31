@@ -16,7 +16,7 @@ export default function HomeScreen() {
   const [challenges, setChallenges] = useState<string[]>([]);
   const [prompt, setPrompt] = useState<string | null>(null);
   const [posts, setPosts] = useState<any[]>([]);
-
+                      
   useEffect(() => {
     const fetchChallenges = async () => {
       try {

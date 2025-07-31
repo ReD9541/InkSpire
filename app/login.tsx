@@ -2,6 +2,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { ValidIndicator } from "@/components/ui/ValidIndicator";
 import { AuthContext } from "@/contexts/AuthContext";
+import { account } from "@/lib/appwrite";
 import { Link, router } from "expo-router";
 import { useContext, useEffect, useState } from "react";
 import {
@@ -25,7 +26,7 @@ export default function Login() {
 
 const login = async () => {
   try {
-    await user.createEmailSession(email, password);
+    await account.createEmailPasswordSession(email, password);
     setAuth(await user.get());
   } catch (error: any) {
     console.log("Login failed:", error.message || error);

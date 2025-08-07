@@ -3,11 +3,15 @@ import { ThemedView } from "@/components/ThemedView";
 import { ValidIndicator } from "@/components/ui/ValidIndicator";
 import { AuthContext } from "@/contexts/AuthContext";
 import { account } from "@/lib/appwrite";
+import { LinearGradient } from "expo-linear-gradient";
 import { Link, router } from "expo-router";
 import { useContext, useEffect, useState } from "react";
 import {
   Image,
+  KeyboardAvoidingView,
+  Platform,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -24,14 +28,14 @@ export default function Login() {
 
   const user = useContext(AuthContext);
 
-const login = async () => {
-  try {
-    await account.createEmailPasswordSession(email, password);
-    setAuth(await user.get());
-  } catch (error: any) {
-    console.log("Login failed:", error.message || error);
-  }
-};
+  const login = async () => {
+    try {
+      await account.createEmailPasswordSession(email, password);
+      setAuth(await user.get());
+    } catch (error: any) {
+      console.log("Login failed:", error.message || error);
+    }
+  };
 
   useEffect(() => {
     if (auth) {
@@ -48,200 +52,235 @@ const login = async () => {
   }, [password]);
 
   return (
-    <ThemedView style={styles.container}>
-      <View style={styles.header}>
-        <ThemedText style={styles.title}>
-          Login to an InkSpire Account
-        </ThemedText>
-        <Image
-          source={require("../assets/images/InkSpire_logo.png")}
-          style={styles.logo}
-        />
-      </View>
-      <View style={styles.labelRow}>
-        <ThemedText style={styles.label}>Email</ThemedText>
-        <ValidIndicator valid={validEmail} />
-      </View>
-      <TextInput
-        style={styles.input}
-        placeholder="you@example.com"
-        value={email}
-        onChangeText={setEmail}
-      />
+    <KeyboardAvoidingView
+      style={{ flex: 1, backgroundColor: "#111111" }}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <ThemedView style={styles.container}>
+          <View style={styles.header}>
+            <View style={styles.titleWrapper}>
+              <Text style={styles.titleLineOne}>sign in to</Text>
+              <Text style={styles.titleLineTwo}>inkspire</Text>
+            </View>
+            <Image
+              source={require("../assets/images/InkSpire_logo.png")}
+              style={styles.logo}
+            />
+          </View>
 
-      <View style={styles.labelRow}>
-        <ThemedText style={styles.label}>Password</ThemedText>
-        <ValidIndicator valid={validPassword} />
-      </View>
-      <TextInput
-        style={styles.input}
-        placeholder="minimum 8 characters"
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-      />
-      <Pressable
-        style={styles.rememberRow}
-        onPress={() => setRememberMe(!rememberMe)}
-      >
-        <View style={[styles.checkbox, rememberMe && styles.checkedCheckbox]}>
-          {rememberMe && <Text style={styles.checkmark}>✓</Text>}
-        </View>
-        <Text style={styles.rememberText}>Remember Me</Text>
-      </Pressable>
+          <View style={styles.labelRow}>
+            <ThemedText style={styles.label}>Email</ThemedText>
+            {email.length > 0 && <ValidIndicator valid={validEmail} />}
+          </View>
+          <TextInput
+            style={styles.input}
+            placeholder="you@example.com"
+            placeholderTextColor="#999"
+            value={email}
+            onChangeText={setEmail}
+          />
 
-      <View style={styles.buttonRow}>
-        <Link href="/register" asChild>
-          <Pressable style={styles.secondaryButton}>
-            <Text style={styles.secondaryButtonText}>Create Account</Text>
-          </Pressable>
-        </Link>
+          <View style={styles.labelRow}>
+            <ThemedText style={styles.label}>Password</ThemedText>
+            {password.length > 0 && <ValidIndicator valid={validPassword} />}
+          </View>
+          <TextInput
+            style={styles.input}
+            placeholder="minimum 8 characters"
+            placeholderTextColor="#999"
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
+          />
 
-        <Pressable
-          onPress={login}
-          disabled={!validEmail || !validPassword}
-          style={
-            !validEmail || !validPassword
-              ? styles.disabledButton
-              : styles.primaryButton
-          }
-        >
-          <Text
-            style={
-              !validEmail || !validPassword
-                ? styles.disabledButtonText
-                : styles.primaryButtonText
-            }
+          <Pressable
+            style={styles.rememberRow}
+            onPress={() => setRememberMe(!rememberMe)}
           >
-            Sign In
-          </Text>
-        </Pressable>
-      </View>
-    </ThemedView>
+            <View
+              style={[styles.checkbox, rememberMe && styles.checkedCheckbox]}
+            >
+              {rememberMe && <Text style={styles.checkmark}>✓</Text>}
+            </View>
+            <Text style={styles.rememberText}>Remember Me</Text>
+          </Pressable>
+
+          <View style={{ flex: 1 }} />
+          <View style={styles.authActions}>
+            <View style={styles.buttonRow}>
+  <View style={styles.buttonLabelWrapper}>
+    <Text style={styles.notRegisteredText}>Not registered yet?</Text>
+  </View>
+
+  <Link href="/register" asChild>
+    <Pressable style={styles.button}>
+      <LinearGradient
+        colors={["#C08EFF", "#F0A7F5", "#FFCAA7"]}
+        start={[0, 0]}
+        end={[1, 1]}
+        style={styles.gradient}
+      >
+        <Text style={styles.buttonText}>Create Account</Text>
+      </LinearGradient>
+    </Pressable>
+  </Link>
+
+  <Pressable
+    onPress={login}
+    disabled={!validEmail || !validPassword}
+    style={styles.button}
+  >
+    <LinearGradient
+      colors={
+        !validEmail || !validPassword
+          ? ["#333", "#444"]
+          : ["#F0A7F5", "#D5E4B5"]
+      }
+      start={[0, 0]}
+      end={[1, 1]}
+      style={styles.gradient}
+    >
+      <Text style={styles.buttonText}>Sign In</Text>
+    </LinearGradient>
+  </Pressable>
+</View>
+
+          </View>
+        </ThemedView>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
+  scrollContainer: {
+    flexGrow: 1,
+  },
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#111111",
     paddingHorizontal: 20,
-    paddingTop: 80,
+    paddingTop: 60,
+    paddingBottom: 40,
   },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 40,
     alignItems: "center",
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "600",
-    color: "#111",
-    flex: 1,
-    marginRight: 10,
-  },
-  logo: {
-    width: 150,
-    height: 150,
     marginBottom: 30,
-    borderRadius: 75,
   },
-  label: {
-    fontSize: 14,
-    fontWeight: "500",
-    marginBottom: 5,
-    color: "#222",
+
+  titleWrapper: {
+    flex: 1,
+    paddingRight: 20,
   },
+
+  titleLineOne: {
+    fontSize: 38,
+    fontWeight: "400",
+    color: "#FFE6EC",
+    fontFamily: "Asar", 
+    lineHeight: 34,
+  },
+
+  titleLineTwo: {
+    fontSize: 40,
+    fontWeight: "400",
+    color: "#FFE6EC",
+    fontFamily: "Asar",
+    lineHeight: 40,
+  },
+
+  logo: {
+    width: 175,
+    height: 200,
+    resizeMode: "contain",
+  },
+
   labelRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 5,
   },
-
+  label: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: "#C08EFF",
+  },
   input: {
-    backgroundColor: "#f1f1f1",
+    backgroundColor: "#222",
     borderRadius: 30,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
+    paddingVertical: 12,
+    paddingHorizontal: 18,
     marginBottom: 20,
     fontSize: 16,
+    color: "#fff",
     borderWidth: 1,
     borderColor: "#C08EFF",
   },
   rememberRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginVertical: 10,
-    paddingVertical: 8,
-    paddingHorizontal: 4,
+    marginBottom: 20,
   },
-
   checkbox: {
     width: 24,
     height: 24,
     borderWidth: 1,
     borderColor: "#C08EFF",
     marginRight: 10,
-    borderRadius: 4,
+    borderRadius: 12,
     justifyContent: "center",
     alignItems: "center",
   },
-
   checkedCheckbox: {
-    backgroundColor: "#fff",
+    backgroundColor: "#C08EFF",
   },
-
   checkmark: {
-    color: "#C08EFF",
-    fontSize: 16,
-  },
-
-  rememberText: {
-    fontSize: 16,
-  },
-
-  buttonRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  primaryButton: {
-    flex: 1,
-    backgroundColor: "#111",
-    paddingVertical: 12,
-    borderRadius: 30,
-    alignItems: "center",
-    marginLeft: 10,
-  },
-  primaryButtonText: {
-    color: "#fff",
-    fontWeight: "600",
-    fontSize: 15,
-  },
-  secondaryButton: {
-    flex: 1,
-    backgroundColor:"#B394D9",
-    paddingVertical: 12,
-    borderRadius: 30,
-    alignItems: "center",
-    marginRight: 10,
-  },
-  secondaryButtonText: {
     color: "#111",
-    fontWeight: "500",
-    fontSize: 15,
+    fontSize: 16,
   },
-  disabledButton: {
+  rememberText: {
+    fontSize: 15,
+    color: "#fff",
+  },
+  authActions: {
+    marginTop: 30,
+    alignItems: "center",
+  },
+buttonRow: {
+  flexDirection: "row",
+  justifyContent: "space-between",
+  alignItems: "flex-start",
+  marginTop: 10,
+},
+
+buttonLabelWrapper: {
+  position: "absolute",
+  top: -25, 
+  left: 25,
+},
+
+notRegisteredText: {
+  fontSize: 14,
+  color: "#C08EFF",
+},
+
+  button: {
     flex: 1,
-    backgroundColor: "#aaa",
+    marginHorizontal: 5,
+    borderRadius: 30,
+    overflow: "hidden",
+  },
+  gradient: {
     paddingVertical: 12,
     borderRadius: 30,
     alignItems: "center",
-    marginLeft: 10,
   },
-  disabledButtonText: {
-    color: "#fff",
+  buttonText: {
+    color: "#111",
     fontWeight: "600",
     fontSize: 15,
   },

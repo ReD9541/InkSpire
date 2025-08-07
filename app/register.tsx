@@ -5,6 +5,9 @@ import {
   TextInput,
   Pressable,
   Image,
+  KeyboardAvoidingView,
+  ScrollView,
+  Platform,
 } from "react-native";
 import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
@@ -13,32 +16,28 @@ import { AuthContext } from "@/contexts/AuthContext";
 import { router, Link } from "expo-router";
 import { ValidIndicator } from "@/components/ui/ValidIndicator";
 import { ID } from "react-native-appwrite";
-import React from "react";
 import { account } from "@/lib/appwrite";
-import { useUser } from "@/contexts/UserContext";
+import { LinearGradient } from "expo-linear-gradient";
 
-export default function register(props: any) {
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [retypePassword, setRetypePassword] = useState<string>("");
-  // email and password validity
-  const [validEmail, setValidEmail] = useState<boolean>(false);
-  const [validPassword, setValidPassword] = useState<boolean>(false);
-  const [auth, setAuth] = useState<null | any>(null);
-
-  const [passwordsMatch, setPasswordsMatch] = useState<boolean>(false);
-  const [name, setName] = useState<string>("");
+export default function Register() {
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
+  const [retypePassword, setRetypePassword] = useState("");
+  const [validEmail, setValidEmail] = useState(false);
+  const [validPassword, setValidPassword] = useState(false);
+  const [passwordsMatch, setPasswordsMatch] = useState(false);
+  const [acceptedTnC, setAcceptedTnC] = useState(false);
+  const [auth, setAuth] = useState(null);
 
   const user = useContext(AuthContext);
-  const [acceptedTnC, setAcceptedTnC] = useState(false);
+
   const canSubmit =
     validEmail && validPassword && passwordsMatch && acceptedTnC;
+
   const register = async () => {
     try {
-      // sign up with unique id, email, password, and name metadata
       await account.create(ID.unique(), email, password, name);
-
-      // create a session after registration
       const session = await user.createEmailPasswordSession(email, password);
       setAuth(session);
     } catch (error) {
@@ -52,133 +51,163 @@ export default function register(props: any) {
     }
   }, [auth]);
 
-  //const user = useUser()
-  //console.log(user)
   useEffect(() => {
-    if (email.indexOf("@") > 0) {
-      // console.log('valid email')
-      setValidEmail(true);
-    } else {
-      // console.log('invalid email')
-      setValidEmail(false);
-    }
+    setValidEmail(email.includes("@"));
   }, [email]);
 
   useEffect(() => {
-    if (password.length >= 8) {
-      setValidPassword(true);
-    } else {
-      setValidPassword(false);
-    }
+    setValidPassword(password.length >= 8);
   }, [password]);
 
   useEffect(() => {
     setPasswordsMatch(retypePassword === password && retypePassword.length > 0);
   }, [retypePassword, password]);
 
-  useEffect(() => {
-    console.log(user);
-  }, [user]);
-
   return (
-    <ThemedView style={styles.container}>
-      <View style={styles.header}>
-        <ThemedText style={styles.title}>Create InkSpire Account</ThemedText>
-        <Image
-          source={require("../assets/images/InkSpire_logo.png")}
-          style={styles.logo}
-        />
-      </View>
+    <KeyboardAvoidingView
+      style={{ flex: 1, backgroundColor: "#111111" }}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <ThemedView style={styles.container}>
+          {/* Header */}
+          <View style={styles.header}>
+            <View style={styles.titleWrapper}>
+              <Text style={styles.titleLineOne}>sign in to</Text>
+              <Text style={styles.titleLineTwo}>inkspire</Text>
+            </View>
+            <Image
+              source={require("../assets/images/InkSpire_logo.png")}
+              style={styles.logo}
+            />
+          </View>
 
-      <View style={styles.form}>
-        <View style={styles.labelRow}>
-          <ThemedText style={styles.labelText}>Email</ThemedText>
-          <ValidIndicator valid={validEmail} />
-        </View>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter Email"
-          value={email}
-          onChangeText={(val) => setEmail(val)}
-        />
-
-        <ThemedText style={styles.labelText}>Username</ThemedText>
-        <TextInput
-          style={styles.input}
-          placeholder="Create Username"
-          value={name}
-          onChangeText={setName}
-        />
-
-        <View style={styles.labelRow}>
-          <ThemedText style={styles.labelText}>Password</ThemedText>
-          <ValidIndicator valid={validPassword} />
-        </View>
-        <TextInput
-          style={styles.input}
-          placeholder="Create Password"
-          secureTextEntry={true}
-          value={password}
-          onChangeText={(val) => setPassword(val)}
-        />
-
-        <View style={styles.labelRow}>
-          <ThemedText style={styles.labelText}>Confirm Password</ThemedText>
-          <ValidIndicator valid={passwordsMatch} />
-        </View>
-        <TextInput
-          style={styles.input}
-          placeholder="Retype Password"
-          secureTextEntry={true}
-          value={retypePassword}
-          onChangeText={(val) => setRetypePassword(val)}
-        />
-
-        <View style={styles.checkboxRow}>
-          <Pressable
-            style={[
-              styles.checkboxCircle,
-              acceptedTnC && styles.checkboxCircleChecked,
-            ]}
-            onPress={() => setAcceptedTnC(!acceptedTnC)}
+          {/* Form */}
+          <View style={styles.labelRow}>
+            <Text style={styles.label}>Email</Text>
+            {email.length > 0 && <ValidIndicator valid={validEmail} />}
+          </View>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter Email"
+            placeholderTextColor="#999"
+            value={email}
+            onChangeText={setEmail}
           />
-          <Text style={styles.checkboxLabel}>
-            I have read and agree to the T&Cs
-          </Text>
-        </View>
 
-        <View style={styles.buttonRow}>
-          <Link href="/login" asChild>
-            <Pressable style={styles.secondaryButton}>
-              <Text style={styles.secondaryButtonText}>Sign In</Text>
-            </Pressable>
-          </Link>
+          <Text style={styles.label}>Username</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Create Username"
+            placeholderTextColor="#999"
+            value={name}
+            onChangeText={setName}
+          />
 
+          <View style={styles.labelRow}>
+            <Text style={styles.label}>Password</Text>
+            {password.length > 0 && <ValidIndicator valid={validPassword} />}
+          </View>
+          <TextInput
+            style={styles.input}
+            placeholder="Create Password"
+            placeholderTextColor="#999"
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
+          />
+
+          <View style={styles.labelRow}>
+            <Text style={styles.label}>Confirm Password</Text>
+            {retypePassword.length > 0 && (
+              <ValidIndicator valid={passwordsMatch} />
+            )}
+          </View>
+          <TextInput
+            style={styles.input}
+            placeholder="Retype Password"
+            placeholderTextColor="#999"
+            secureTextEntry
+            value={retypePassword}
+            onChangeText={setRetypePassword}
+          />
+
+          {/* T&C */}
           <Pressable
-            style={canSubmit ? styles.primaryButton : styles.disabledButton}
-            disabled={!canSubmit}
-            onPress={register}
+            style={styles.checkboxRow}
+            onPress={() => setAcceptedTnC(!acceptedTnC)}
           >
-            <ThemedText
-              style={
-                canSubmit ? styles.primaryButtonText : styles.disabledButtonText
-              }
+            <View
+              style={[
+                styles.checkboxCircle,
+                acceptedTnC && styles.checkboxCircleChecked,
+              ]}
             >
-              Create Account
-            </ThemedText>
+              {acceptedTnC && <Text style={styles.checkmark}>✓</Text>}
+            </View>
+            <Text style={styles.checkboxLabel}>
+              I have read and agree to the T&Cs
+            </Text>
           </Pressable>
-        </View>
-      </View>
-    </ThemedView>
+
+          {/* Footer Buttons */}
+          <View style={{ flex: 1 }} />
+          <View style={styles.authActions}>
+            <View style={styles.buttonRow}>
+              <View style={styles.buttonLabelWrapper}>
+                <Text style={styles.notRegisteredText}>
+                  Already have an account?
+                </Text>
+              </View>
+
+              <Link href="/login" asChild>
+                <Pressable style={styles.button}>
+                  <LinearGradient
+                    colors={["#C08EFF", "#F0A7F5", "#FFCAA7"]}
+                    start={[0, 0]}
+                    end={[1, 1]}
+                    style={styles.gradient}
+                  >
+                    <Text style={styles.buttonText}>Sign In</Text>
+                  </LinearGradient>
+                </Pressable>
+              </Link>
+
+              <Pressable
+                onPress={register}
+                disabled={!canSubmit}
+                style={styles.button}
+              >
+                <LinearGradient
+                  colors={
+                    !canSubmit
+                      ? ["#333", "#444"]
+                      : ["#F0A7F5", "#D5E4B5"]
+                  }
+                  start={[0, 0]}
+                  end={[1, 1]}
+                  style={styles.gradient}
+                >
+                  <Text style={styles.buttonText}>Create Account</Text>
+                </LinearGradient>
+              </Pressable>
+            </View>
+          </View>
+        </ThemedView>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
-
 const styles = StyleSheet.create({
+  scrollContainer: {
+    flexGrow: 1,
+  },
   container: {
     flex: 1,
-    backgroundColor: "#fff",
-    padding: 20,
-    justifyContent: "center",
+    backgroundColor: "#111111",
+    paddingHorizontal: 20,
+    paddingTop: 60,
+    paddingBottom: 40,
   },
   header: {
     flexDirection: "row",
@@ -186,105 +215,112 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 30,
   },
+  titleWrapper: {
+    flex: 1,
+    paddingRight: 20,
+  },
+  titleLineOne: {
+    fontSize: 38,
+    fontWeight: "400",
+    color: "#FFE6EC",
+    fontFamily: "Asar",
+    lineHeight: 34,
+    textTransform: "lowercase",
+  },
+  titleLineTwo: {
+    fontSize: 40,
+    fontWeight: "400",
+    color: "#FFE6EC",
+    fontFamily: "Asar",
+    lineHeight: 40,
+    textTransform: "lowercase",
+  },
   logo: {
-    width: 150,
-    height: 150,
-    marginBottom: 30,
-    borderRadius: 75,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "600",
-    color: "#333",
-    flexShrink: 1,
-  },
-  form: {
-    width: "100%",
+    width: 175,
+    height: 200,
+    resizeMode: "contain",
   },
   labelRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    marginBottom: 5,
   },
-  checkboxCircleChecked: {
-    backgroundColor: "#C08EFF",
-    borderColor: "#999",
-  },
-  labelText: {
+  label: {
     fontSize: 14,
     fontWeight: "500",
-    marginBottom: 5,
-    color: "#111",
+    color: "#C08EFF",
   },
   input: {
-    backgroundColor: "#f4f4f4",
-    borderRadius: 25,
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    fontSize: 16,
+    backgroundColor: "#222",
+    borderRadius: 30,
+    paddingVertical: 12,
+    paddingHorizontal: 18,
     marginBottom: 20,
+    fontSize: 16,
+    color: "#fff",
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: "#C08EFF",
   },
   checkboxRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 25,
+    marginBottom: 20,
   },
   checkboxCircle: {
-    width: 16,
-    height: 16,
-    borderRadius: 8,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#999",
-    backgroundColor: "#eee",
-    marginRight: 8,
+    borderColor: "#C08EFF",
+    marginRight: 10,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  checkboxCircleChecked: {
+    backgroundColor: "#C08EFF",
+  },
+  checkmark: {
+    color: "#111",
+    fontSize: 16,
   },
   checkboxLabel: {
-    fontSize: 13,
-    color: "#444",
+    fontSize: 15,
+    color: "#fff",
+  },
+  authActions: {
+    marginTop: 30,
+    alignItems: "center",
   },
   buttonRow: {
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginTop: 10,
   },
-  secondaryButton: {
+  buttonLabelWrapper: {
+    position: "absolute",
+    top: -25,
+    left: 25,
+  },
+  notRegisteredText: {
+    fontSize: 14,
+    color: "#C08EFF",
+  },
+  button: {
     flex: 1,
-    backgroundColor:"#C08EFF",
-    borderRadius: 25,
+    marginHorizontal: 5,
+    borderRadius: 30,
+    overflow: "hidden",
+  },
+  gradient: {
     paddingVertical: 12,
-    marginRight: 8,
+    borderRadius: 30,
     alignItems: "center",
   },
-  secondaryButtonText: {
-    fontSize: 15,
+  buttonText: {
     color: "#111",
-    fontWeight: "500",
-  },
-  primaryButton: {
-    flex: 1,
-    backgroundColor:"#B394D9",
-    borderRadius: 25,
-    paddingVertical: 12,
-    marginLeft: 8,
-    alignItems: "center",
-  },
-  primaryButtonText: {
-    fontSize: 15,
-    color: "#fff",
     fontWeight: "600",
-  },
-  disabledButton: {
-    flex: 1,
-    backgroundColor: "#ccc",
-    borderRadius: 25,
-    paddingVertical: 12,
-    marginLeft: 8,
-    alignItems: "center",
-  },
-  disabledButtonText: {
     fontSize: 15,
-    color: "#888",
-    fontWeight: "600",
   },
 });

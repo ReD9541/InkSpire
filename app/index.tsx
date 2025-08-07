@@ -1,83 +1,168 @@
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import { Link } from 'expo-router';
-import React from 'react';
-import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/ThemedView";
+import { LinearGradient } from "expo-linear-gradient";
+import { Link } from "expo-router";
+import React from "react";
+import {
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  Dimensions,
+  ScrollView,
+  SafeAreaView,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 
-export default function landing() {
+const { height: screenHeight } = Dimensions.get("window");
+const HERO_IMAGE_HEIGHT = screenHeight * 0.41;
 
+export default function Landing() {
   return (
-    <ThemedView style={styles.container}>
-      <Image
-        source={require('../assets/images/InkSpire_logo.png')} 
-        style={styles.logo}
-      />
+    <KeyboardAvoidingView
+      style={{ flex: 1, backgroundColor: "#111111" }}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
+      <ScrollView contentContainerStyle={styles.scrollWrapper}>
+        <SafeAreaView style={styles.innerContainer}>
+          <Image
+            source={require("../assets/images/splash-icon.png")}
+            style={styles.logo}
+          />
 
-      <ThemedText style={styles.description}>
-        A Community Built for Artists Like You.
-      </ThemedText>
+          <ThemedText style={styles.description}>
+            A Community Built for Artists Like You.
+          </ThemedText>
 
-      <Link href="/register" asChild>
-        <TouchableOpacity style={styles.button}>
-          <ThemedText style={styles.buttonText}>Join Now</ThemedText>
-        </TouchableOpacity>
-      </Link>
+          <View style={styles.heroScrollWrapper}>
+            <ScrollView
+              horizontal
+              scrollEnabled={true}
+              nestedScrollEnabled={false}
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.scrollContainer}
+            >
+              <Image
+                source={require("../assets/images/hero-images/hero-image1.png")}
+                style={styles.heroImage}
+              />
+              <Image
+                source={require("../assets/images/hero-images/hero-image2.png")}
+                style={styles.heroImage}
+              />
+              <Image
+                source={require("../assets/images/hero-images/hero-image3.png")}
+                style={styles.heroImage}
+              />
+              <Image
+                source={require("../assets/images/hero-images/hero-image4.png")}
+                style={styles.heroImage}
+              />
+            </ScrollView>
+          </View>
 
-      <View style={styles.signInContainer}>
-        <ThemedText style={styles.signInText}>Already have an account?</ThemedText>
-        <Link href="/login">
-          <ThemedText style={styles.signInButton}>Sign In</ThemedText>
-        </Link>
-      </View>
-    </ThemedView>
+          <Link href="/register" asChild>
+            <TouchableOpacity style={styles.button}>
+              <LinearGradient
+                colors={["#C08EFF", "#F0A7F5", "#FFCAA7", "#D5E4B5"]}
+                start={[0, 0]}
+                end={[1, 1]}
+                style={styles.gradient}
+              >
+                <ThemedText style={styles.buttonText}>Join Now</ThemedText>
+              </LinearGradient>
+            </TouchableOpacity>
+          </Link>
+
+          <View style={styles.signInContainer}>
+            <ThemedText style={styles.signInText}>
+              Already have an account?{" "}
+            </ThemedText>
+            <Link href="/login">
+              <ThemedText style={styles.signInButton}>Log In</ThemedText>
+            </Link>
+          </View>
+        </SafeAreaView>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
 export const styles = StyleSheet.create({
-  container: {
+  scrollWrapper: {
+    flexGrow: 1,
+    paddingBottom: 40,
+  },
+  innerContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
+    alignItems: "center",
     padding: 20,
   },
   logo: {
-    width: 150,  
-    height: 150, 
+    width: 200,
+    height: 200,
     marginBottom: 30,
-    borderRadius: 75,
   },
   description: {
-    fontSize: 18,
-    color: '#555',
-    textAlign: 'center',
+    fontFamily: "Sen",
+    fontSize: 16,
+    textAlign: "center",
     marginBottom: 40,
     paddingHorizontal: 40,
+    color: "#C08EFF",
+  },
+  heroScrollWrapper: {
+    height: HERO_IMAGE_HEIGHT,
+    marginBottom: 30,
+  },
+  scrollContainer: {
+    paddingHorizontal: 10,
+  },
+  heroImage: {
+    width: 180,
+    height: HERO_IMAGE_HEIGHT,
+    resizeMode: "cover",
+    borderRadius: 20,
+    marginRight: 15,
+    borderWidth: 0.3,
+    borderColor: "#C08EFF",
   },
   button: {
-    backgroundColor: '#C08EFF', 
-    paddingVertical: 15,
-    paddingHorizontal: 60,
-    borderRadius: 30,
+    width: 261,
+    height: 37,
+    borderRadius: 32.5,
     marginBottom: 20,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  gradient: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 32.5,
+    justifyContent: "center",
+    alignItems: "center",
   },
   buttonText: {
-    color: '#fff',
+    color: "#111111",
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "600",
+    fontFamily: "Sen",
+    textAlign: "center",
   },
   signInContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "column",
+    alignItems: "center",
   },
   signInText: {
-    color: '#888',
-    fontSize: 16,
+    color: "#C08EFF",
+    fontSize: 15,
   },
   signInButton: {
-    color: '#C08EFF', 
-    fontSize: 16,
-    fontWeight: 'bold',
+    color: "#C08EFF",
+    fontSize: 15,
+    fontFamily: "Sen",
     marginLeft: 5,
+    textDecorationLine: "underline",
   },
 });

@@ -108,44 +108,43 @@ export default function Login() {
 
           <View style={{ flex: 1 }} />
           <View style={styles.authActions}>
+            <View style={styles.buttonLabelWrapper}>
+              <Text style={styles.notRegisteredText}>Not registered yet?</Text>
+            </View>
+
             <View style={styles.buttonRow}>
-  <View style={styles.buttonLabelWrapper}>
-    <Text style={styles.notRegisteredText}>Not registered yet?</Text>
-  </View>
+              <Link href="/register" asChild>
+                <Pressable style={styles.button}>
+                  <LinearGradient
+                    colors={["#C08EFF", "#F0A7F5", "#FFCAA7"]}
+                    start={[0, 0]}
+                    end={[1, 1]}
+                    style={styles.gradient}
+                  >
+                    <Text style={styles.buttonText}>Create Account</Text>
+                  </LinearGradient>
+                </Pressable>
+              </Link>
 
-  <Link href="/register" asChild>
-    <Pressable style={styles.button}>
-      <LinearGradient
-        colors={["#C08EFF", "#F0A7F5", "#FFCAA7"]}
-        start={[0, 0]}
-        end={[1, 1]}
-        style={styles.gradient}
-      >
-        <Text style={styles.buttonText}>Create Account</Text>
-      </LinearGradient>
-    </Pressable>
-  </Link>
-
-  <Pressable
-    onPress={login}
-    disabled={!validEmail || !validPassword}
-    style={styles.button}
-  >
-    <LinearGradient
-      colors={
-        !validEmail || !validPassword
-          ? ["#333", "#444"]
-          : ["#F0A7F5", "#D5E4B5"]
-      }
-      start={[0, 0]}
-      end={[1, 1]}
-      style={styles.gradient}
-    >
-      <Text style={styles.buttonText}>Sign In</Text>
-    </LinearGradient>
-  </Pressable>
-</View>
-
+              <Pressable
+                onPress={login}
+                disabled={!validEmail || !validPassword}
+                style={styles.button}
+              >
+                <LinearGradient
+                  colors={
+                    !validEmail || !validPassword
+                      ? ["#333", "#444"]
+                      : ["#F0A7F5", "#D5E4B5"]
+                  }
+                  start={[0, 0]}
+                  end={[1, 1]}
+                  style={styles.gradient}
+                >
+                  <Text style={styles.buttonText}>Sign In</Text>
+                </LinearGradient>
+              </Pressable>
+            </View>
           </View>
         </ThemedView>
       </ScrollView>
@@ -180,7 +179,7 @@ const styles = StyleSheet.create({
     fontSize: 38,
     fontWeight: "400",
     color: "#FFE6EC",
-    fontFamily: "Asar", 
+    fontFamily: "Asar",
     lineHeight: 34,
   },
 
@@ -247,38 +246,47 @@ const styles = StyleSheet.create({
     color: "#fff",
   },
   authActions: {
+    width: "100%",
     marginTop: 30,
-    alignItems: "center",
   },
-buttonRow: {
-  flexDirection: "row",
-  justifyContent: "space-between",
-  alignItems: "flex-start",
-  marginTop: 10,
-},
 
-buttonLabelWrapper: {
-  position: "absolute",
-  top: -25, 
-  left: 25,
-},
+  notRegisteredText: {
+    fontSize: 14,
+    color: "#C08EFF",
+    textAlign: "left",
+  },
 
-notRegisteredText: {
-  fontSize: 14,
-  color: "#C08EFF",
-},
+  buttonRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
+    marginTop: 30,
+  },
+
+  buttonLabelWrapper: {
+    marginBottom: 10,
+    alignSelf: "flex-start",
+  },
 
   button: {
     flex: 1,
-    marginHorizontal: 5,
+    height: 50,
     borderRadius: 30,
+    justifyContent: "center",
+    alignItems: "center",
     overflow: "hidden",
+    marginHorizontal: 5,
   },
+
   gradient: {
-    paddingVertical: 12,
+    height: "100%",
+    width: "100%",
     borderRadius: 30,
+    justifyContent: "center",
     alignItems: "center",
   },
+
   buttonText: {
     color: "#111",
     fontWeight: "600",

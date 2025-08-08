@@ -1,23 +1,22 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  Pressable,
-  Image,
-  KeyboardAvoidingView,
-  ScrollView,
-  Platform,
-} from "react-native";
 import { ThemedView } from "@/components/ThemedView";
-import { ThemedText } from "@/components/ThemedText";
-import { useState, useEffect, useContext } from "react";
-import { AuthContext } from "@/contexts/AuthContext";
-import { router, Link } from "expo-router";
 import { ValidIndicator } from "@/components/ui/ValidIndicator";
-import { ID } from "react-native-appwrite";
+import { AuthContext } from "@/contexts/AuthContext";
 import { account } from "@/lib/appwrite";
 import { LinearGradient } from "expo-linear-gradient";
+import { Link, router } from "expo-router";
+import { useContext, useEffect, useState } from "react";
+import {
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
+import { ID } from "react-native-appwrite";
 
 export default function Register() {
   const [email, setEmail] = useState("");
@@ -70,7 +69,6 @@ export default function Register() {
     >
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <ThemedView style={styles.container}>
-          {/* Header */}
           <View style={styles.header}>
             <View style={styles.titleWrapper}>
               <Text style={styles.titleLineOne}>sign in to</Text>
@@ -82,7 +80,6 @@ export default function Register() {
             />
           </View>
 
-          {/* Form */}
           <View style={styles.labelRow}>
             <Text style={styles.label}>Email</Text>
             {email.length > 0 && <ValidIndicator valid={validEmail} />}
@@ -132,7 +129,6 @@ export default function Register() {
             onChangeText={setRetypePassword}
           />
 
-          {/* T&C */}
           <Pressable
             style={styles.checkboxRow}
             onPress={() => setAcceptedTnC(!acceptedTnC)}
@@ -150,16 +146,14 @@ export default function Register() {
             </Text>
           </Pressable>
 
-          {/* Footer Buttons */}
-          <View style={{ flex: 1 }} />
           <View style={styles.authActions}>
-            <View style={styles.buttonRow}>
-              <View style={styles.buttonLabelWrapper}>
-                <Text style={styles.notRegisteredText}>
-                  Already have an account?
-                </Text>
-              </View>
+            <View style={styles.buttonLabelWrapper}>
+              <Text style={styles.notRegisteredText}>
+                Already have an account?
+              </Text>
+            </View>
 
+            <View style={styles.buttonRow}>
               <Link href="/login" asChild>
                 <Pressable style={styles.button}>
                   <LinearGradient
@@ -180,9 +174,7 @@ export default function Register() {
               >
                 <LinearGradient
                   colors={
-                    !canSubmit
-                      ? ["#333", "#444"]
-                      : ["#F0A7F5", "#D5E4B5"]
+                    !canSubmit ? ["#333", "#444"] : ["#F0A7F5", "#D5E4B5"]
                   }
                   start={[0, 0]}
                   end={[1, 1]}
@@ -295,29 +287,38 @@ const styles = StyleSheet.create({
   buttonRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginTop: 10,
+    alignItems: "center",
+    marginTop: 20,
+    width: "100%",
   },
+
   buttonLabelWrapper: {
-    position: "absolute",
-    top: -25,
-    left: 25,
+    alignSelf: "flex-start",
+    marginBottom: 10,
   },
+
   notRegisteredText: {
     fontSize: 14,
     color: "#C08EFF",
   },
   button: {
     flex: 1,
+    height: 50,
     marginHorizontal: 5,
     borderRadius: 30,
+    justifyContent: "center",
+    alignItems: "center",
     overflow: "hidden",
   },
+
   gradient: {
-    paddingVertical: 12,
+    width: "100%",
+    height: "100%",
     borderRadius: 30,
+    justifyContent: "center",
     alignItems: "center",
   },
+
   buttonText: {
     color: "#111",
     fontWeight: "600",

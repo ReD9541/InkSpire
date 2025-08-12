@@ -79,7 +79,7 @@ export default function Landing() {
             <ThemedText style={styles.signInText}>
               Already have an account?{" "}
             </ThemedText>
-            <Link href="/login">
+            <Link href="/(tabs)">
               <ThemedText style={styles.signInButton}>Log In</ThemedText>
             </Link>
           </View>

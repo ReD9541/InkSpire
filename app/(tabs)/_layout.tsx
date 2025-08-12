@@ -1,11 +1,8 @@
 import { HapticTab } from "@/components/HapticTab";
-import { IconSymbol } from "@/components/ui/IconSymbol";
-import { Ionicons } from "@expo/vector-icons";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { LinearGradient } from "expo-linear-gradient";
 import { Tabs } from "expo-router";
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, Image } from "react-native";
 
 const ACTIVE = "#FFE6EC";
 const INACTIVE = "#8F86A8";
@@ -32,6 +29,29 @@ function IconWithGlow({
   );
 }
 
+function TabIcon({
+  focused,
+  src,
+  size = 32,
+}: {
+  focused: boolean;
+  src: any; // require(...) result
+  size?: number;
+}) {
+  return (
+    <IconWithGlow focused={focused}>
+      <Image
+        source={src}
+        style={[
+          styles.iconImg,
+          { width: size, height: size, tintColor: focused ? ACTIVE : INACTIVE },
+        ]}
+        resizeMode="contain"
+      />
+    </IconWithGlow>
+  );
+}
+
 export default function TabLayout() {
   return (
     <Tabs
@@ -51,13 +71,11 @@ export default function TabLayout() {
         options={{
           title: "Home",
           tabBarIcon: ({ focused }) => (
-            <IconWithGlow focused={focused}>
-              <IconSymbol
-                name="house.fill"
-                size={40}
-                color={focused ? ACTIVE : INACTIVE}
-              />
-            </IconWithGlow>
+            <TabIcon
+              focused={focused}
+              src={require("../../assets/icons/home-icon.png")}
+              size={34}
+            />
           ),
         }}
       />
@@ -67,13 +85,11 @@ export default function TabLayout() {
         options={{
           title: "Create",
           tabBarIcon: ({ focused }) => (
-            <IconWithGlow focused={focused}>
-              <FontAwesome
-                name="pencil-square-o"
-                size={40}
-                color={focused ? ACTIVE : INACTIVE}
-              />
-            </IconWithGlow>
+            <TabIcon
+              focused={focused}
+              src={require("../../assets/icons/add-post-icon.png")}
+              size={34}
+            />
           ),
         }}
       />
@@ -83,13 +99,11 @@ export default function TabLayout() {
         options={{
           title: "Profile",
           tabBarIcon: ({ focused }) => (
-            <IconWithGlow focused={focused}>
-              <Ionicons
-                name="person-circle"
-                size={40}
-                color={focused ? ACTIVE : INACTIVE}
-              />
-            </IconWithGlow>
+            <TabIcon
+              focused={focused}
+              src={require("../../assets/icons/profile-icon.png")}
+              size={34}
+            />
           ),
         }}
       />
@@ -119,14 +133,20 @@ const styles = StyleSheet.create({
     borderRadius: 26,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 30, 
+    marginTop: 30,
   },
   glow: {
     position: "absolute",
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    opacity: 0.55,
+    borderRadius: 40,
+    backgroundColor: "rgba(255, 230, 236, 0.05)",
+    shadowColor: "rgba(255, 230, 236, 1)",
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 0 },
+    elevation: 0,
+  },
+  iconImg: {
+    width: 40,
+    height: 40,
   },
 });
-

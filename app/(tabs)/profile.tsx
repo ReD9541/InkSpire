@@ -1,172 +1,214 @@
-import React, { useEffect, useState } from "react";
-import {
-  StyleSheet,
-  TextInput,
-  Pressable,
-  Text,
-  View,
-  Alert,
-  ActivityIndicator,
-} from "react-native";
-import { account } from "@/lib/appwrite";
-import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/ThemedView";
+import { account, databases } from "@/lib/appwrite";
+import { router } from "expo-router";
+import React, { useEffect, useMemo, useState } from "react";
+import {
+  ActivityIndicator,
+  Dimensions,
+  FlatList,
+  Image,
+  Pressable,
+  SafeAreaView,
+  StyleSheet,
+  View,
+} from "react-native";
+import { Query } from "react-native-appwrite";
+
+const ACCENT = "#C08EFF";
+const SCREEN_W = Dimensions.get("window").width;
+const H_PADDING = 20;
+const GAP = 6;
+const COLS = 3;
+const TILE = Math.floor((SCREEN_W - H_PADDING * 2 - GAP * (COLS - 1)) / COLS);
 
 export default function Profile() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [oldPassword, setOldPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState<any>(null);
+  const [posts, setPosts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
       try {
-        const user = await account.get();
-        setName(user.name);
-        setEmail(user.email);
-      } catch (error) {
-        Alert.alert("Error", "Failed to load user data.");
+        const me = await account.get();
+        setUser(me);
+        try {
+          const res = await databases.listDocuments(
+            process.env.EXPO_PUBLIC_DATABASE_ID as string,
+            "USER_POSTS_COLLECTION_ID",
+            [Query.equal("userId", me.$id)]
+          );
+          setPosts(res.documents);
+        } catch {
+          setPosts([]);
+        }
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
     })();
   }, []);
 
-  const handleSave = async () => {
-    try {
-      const currentUser = await account.get();
-
-      if (name && name !== currentUser.name) {
-        await account.updateName(name);
-      }
-
-      if (oldPassword && newPassword) {
-        await account.updatePassword(newPassword, oldPassword);
-        setOldPassword("");
-        setNewPassword("");
-        Alert.alert("Password Updated", "Your password has been changed.");
-      }
-
-      Alert.alert("Success", "Profile updated.");
-    } catch (error: any) {
-      Alert.alert("Error", error.message || "Failed to update profile.");
-    }
-  };
-
-  if (isLoading) {
-    return (
-      <ThemedView style={styles.container}>
-        <ActivityIndicator size="large" />
-      </ThemedView>
-    );
-  }
+  const gridData = useMemo(
+    () =>
+      posts.map((p) => ({
+        id: p.$id,
+        uri: p.imageUrl || null,
+      })),
+    [posts]
+  );
 
   return (
-    <ThemedView style={styles.container}>
-      <View style={styles.header}>
-        <ThemedText style={styles.title}>Your Profile</ThemedText>
-      </View>
+    <SafeAreaView style={styles.safe}>
+      <ThemedView style={styles.container}>
+        <View style={styles.header}>
+          <View style={styles.profileTopRow}>
+            <View style={styles.avatarWrap}>
+              <View style={styles.avatar} />
+            </View>
 
-      <View style={styles.labelRow}>
-        <Text style={styles.label}>Email</Text>
-      </View>
-      <TextInput
-        style={[styles.input, styles.disabledInput]}
-        value={email}
-        editable={false}
-      />
+            <Pressable
+              style={styles.settingsBtn}
+              hitSlop={10}
+              onPress={() => {
+                router.push("/settings");
+              }}
+            >
+              <Image
+                source={require("../../assets/icons/settings-icon.png")}
+                style={styles.settingsIcon}
+                resizeMode="contain"
+              />
+            </Pressable>
+          </View>
 
-      <View style={styles.labelRow}>
-        <Text style={styles.label}>Username</Text>
-      </View>
-      <TextInput
-        style={styles.input}
-        value={name}
-        onChangeText={setName}
-        placeholder="Your name"
-      />
+          <ThemedText
+            style={styles.username}
+            numberOfLines={1}
+            adjustsFontSizeToFit
+          >
+            {user?.name || "username"}
+          </ThemedText>
+        </View>
 
-      <View style={styles.labelRow}>
-        <Text style={styles.label}>Old Password</Text>
-      </View>
-      <TextInput
-        style={styles.input}
-        value={oldPassword}
-        onChangeText={setOldPassword}
-        placeholder="Current Password"
-        secureTextEntry
-      />
-
-      <View style={styles.labelRow}>
-        <Text style={styles.label}>New Password</Text>
-      </View>
-      <TextInput
-        style={styles.input}
-        value={newPassword}
-        onChangeText={setNewPassword}
-        placeholder="New Password"
-        secureTextEntry
-      />
-
-      <Pressable onPress={handleSave} style={styles.primaryButton}>
-        <Text style={styles.primaryButtonText}>Update Profile</Text>
-      </Pressable>
-    </ThemedView>
+        {loading ? (
+          <View
+            style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+          >
+            <ActivityIndicator size="large" color={ACCENT} />
+          </View>
+        ) : (
+          <FlatList
+            data={gridData}
+            keyExtractor={(item) => item.id}
+            numColumns={COLS}
+            columnWrapperStyle={{ gap: GAP }}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 16 }}
+            renderItem={({ item }) => (
+              <View style={[styles.tile, !item.uri && styles.tileFallback]}>
+                {item.uri ? (
+                  <Image source={{ uri: item.uri }} style={styles.tileImg} />
+                ) : (
+                  <ThemedText style={styles.tileEmptyText}>No Image</ThemedText>
+                )}
+              </View>
+            )}
+            ListEmptyComponent={
+              <View style={{ paddingTop: 40, alignItems: "center" }}>
+                <ThemedText style={{ color: "#C08EFF" }}>
+                  No posts yet.
+                </ThemedText>
+              </View>
+            }
+          />
+        )}
+      </ThemedView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safe: {
+    flex: 1,
+    backgroundColor: "#111111",
+  },
   container: {
     flex: 1,
-    backgroundColor: "#fff",
-    paddingHorizontal: 20,
-    paddingTop: 80,
+    backgroundColor: "#111111",
+    paddingHorizontal: H_PADDING,
+    paddingTop: 30,
   },
+
   header: {
-    marginBottom: 40,
-    alignItems: "center",
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "600",
-    color: "#111",
-  },
-  labelRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 5,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: "500",
-    color: "#222",
-  },
-  input: {
-    backgroundColor: "#f1f1f1",
-    borderRadius: 30,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
     marginBottom: 20,
-    fontSize: 16,
-    borderWidth: 1,
-    borderColor: "#C08EFF",
   },
-  disabledInput: {
-    color: "#999",
-    backgroundColor: "#eee",
-  },
-  primaryButton: {
-    backgroundColor: "#111",
-    paddingVertical: 12,
-    borderRadius: 30,
+  profileTopRow: {
+    flexDirection: "row",
     alignItems: "center",
-    marginTop: 10,
+    justifyContent: "center",
   },
-  primaryButtonText: {
-    color: "#fff",
-    fontWeight: "600",
-    fontSize: 15,
+  settingsBtn: {
+    position: "absolute",
+    right: 0,
+    top: 6,
+    height: 36,
+    width: 36,
+    borderRadius: 18,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  avatarWrap: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "transparent",
+  },
+  avatar: {
+    width: 92,
+    height: 92,
+    borderRadius: 46,
+    backgroundColor: "#4DA3FF",
+    borderWidth: 2,
+    borderColor: ACCENT,
+  },
+
+  username: {
+    marginTop: 10,
+    textAlign: "center",
+    color: "#FFE6EC",
+    fontSize: 26,
+    fontWeight: "800",
+    lineHeight: 30,
+  },
+  tile: {
+    width: TILE,
+    height: TILE,
+    borderRadius: 10,
+    overflow: "hidden",
+    backgroundColor: "#1A1A1A",
+    marginBottom: GAP,
+  },
+  tileImg: {
+    width: "100%",
+    height: "100%",
+    resizeMode: "cover",
+  },
+  tileFallback: {
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: "#2B2B2B",
+  },
+  tileEmptyText: {
+    color: "#C08EFF",
+    fontSize: 12,
+  },
+  settingsIcon: {
+    width: 34,
+    height: 34,
+    tintColor: "#EDEAF8",
   },
 });

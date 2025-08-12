@@ -91,7 +91,12 @@ export default function Register() {
             value={email}
             onChangeText={setEmail}
           />
-
+          <LinearGradient
+            colors={["#C08EFF", "#F0A7F5", "#FFCAA7", "#D5E4B5"]}
+            start={[0, 0]}
+            end={[1, 1]}
+            style={styles.brandDivider}
+          />
           <Text style={styles.label}>Username</Text>
           <TextInput
             style={styles.input}
@@ -323,5 +328,10 @@ const styles = StyleSheet.create({
     color: "#111",
     fontWeight: "600",
     fontSize: 15,
+  },
+  brandDivider: {
+    height: 3,
+    borderRadius: 3,
+    marginBottom: 18,
   },
 });

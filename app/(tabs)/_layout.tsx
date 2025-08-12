@@ -64,8 +64,6 @@ export default function TabLayout() {
         tabBarStyle: styles.tabBar,
       }}
     >
-      <Tabs.Screen name="settings" options={{ href: null }} />
-
       <Tabs.Screen
         name="index"
         options={{

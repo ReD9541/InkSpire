@@ -1,18 +1,17 @@
 import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
 import { LinearGradient } from "expo-linear-gradient";
 import { Link } from "expo-router";
 import React from "react";
 import {
+  Dimensions,
   Image,
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
+  ScrollView,
   StyleSheet,
   TouchableOpacity,
   View,
-  Dimensions,
-  ScrollView,
-  SafeAreaView,
-  KeyboardAvoidingView,
-  Platform,
 } from "react-native";
 
 const { height: screenHeight } = Dimensions.get("window");
@@ -79,7 +78,7 @@ export default function Landing() {
             <ThemedText style={styles.signInText}>
               Already have an account?{" "}
             </ThemedText>
-            <Link href="/(tabs)">
+            <Link href="/login" asChild>
               <ThemedText style={styles.signInButton}>Log In</ThemedText>
             </Link>
           </View>

@@ -11,8 +11,8 @@ import {
 } from "@/config/Config";
 import { account, databases } from "@/lib/appwrite";
 import { LinearGradient } from "expo-linear-gradient";
-import { router } from "expo-router";
-import React, { useEffect, useMemo, useState } from "react";
+import { router, useFocusEffect } from "expo-router";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Dimensions,
@@ -49,85 +49,120 @@ export default function Profile() {
   const [posts, setPosts] = useState<any[]>([]);
   const [favourites, setFavourites] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   const [avatarUri, setAvatarUri] = useState<string | null>(null);
   const [bio, setBio] = useState<string | null>(null);
 
   const [activeTab, setActiveTab] = useState<"posts" | "favourites">("posts");
 
-  useEffect(() => {
-    (async () => {
+  const load = useCallback(async () => {
+    try {
+      const me = await account.get();
+      setUser(me);
+
       try {
-        const me = await account.get();
-        setUser(me);
-
-        try {
-          const prof = await databases.listDocuments(
-            DATABASE_ID,
-            USER_PROFILE_COLLECTION_ID,
-            [Query.equal("Userid", me.$id), Query.limit(1)]
-          );
-          const pdoc: any = prof.documents?.[0];
-          if (pdoc) {
-            if (pdoc.profilePicId) {
-              setAvatarUri(buildFileUrl(USER_PROFILE_BUCKET_ID, pdoc.profilePicId));
-            }
-            if (typeof pdoc.bio === "string") setBio(pdoc.bio);
+        const prof = await databases.listDocuments(
+          DATABASE_ID,
+          USER_PROFILE_COLLECTION_ID,
+          [Query.equal("Userid", me.$id), Query.limit(1)]
+        );
+        const pdoc: any = prof.documents?.[0];
+        if (pdoc) {
+          if (pdoc.profilePicId) {
+            setAvatarUri(buildFileUrl(USER_PROFILE_BUCKET_ID, pdoc.profilePicId));
+          } else {
+            setAvatarUri(null);
           }
-        } catch {}
+          if (typeof pdoc.bio === "string") setBio(pdoc.bio);
+          else setBio(null);
+        } else {
+          setAvatarUri(null);
+          setBio(null);
+        }
+      } catch {}
 
-        const myRes = await databases.listDocuments(
+      const myRes = await databases.listDocuments(
+        DATABASE_ID,
+        USER_POST_COLLECTION_ID,
+        [
+          Query.equal("userID", me.$id),
+          Query.orderDesc("$createdAt"),
+          Query.limit(100),
+        ]
+      );
+      const myPosts = myRes.documents.map((doc: any) =>
+        doc.imageUrl
+          ? doc
+          : doc.imageId
+          ? { ...doc, imageUrl: buildFileUrl(USER_POST_BUCKET_ID, doc.imageId) }
+          : doc
+      );
+      setPosts(myPosts);
+
+      try {
+        const favRes = await databases.listDocuments(
           DATABASE_ID,
           USER_POST_COLLECTION_ID,
           [
-            Query.equal("userID", me.$id),
+            Query.search("favouritedBy", me.$id),
             Query.orderDesc("$createdAt"),
             Query.limit(100),
           ]
         );
-        const myPosts = myRes.documents.map((doc: any) =>
+
+        const favExact = favRes.documents.filter(
+          (d: any) => typeof d.favouritedBy === "string" && idInList(d.favouritedBy, me.$id)
+        );
+
+        const favWithUrls = favExact.map((doc: any) =>
           doc.imageUrl
             ? doc
             : doc.imageId
             ? { ...doc, imageUrl: buildFileUrl(USER_POST_BUCKET_ID, doc.imageId) }
             : doc
         );
-        setPosts(myPosts);
 
-        try {
-          const favRes = await databases.listDocuments(
-            DATABASE_ID,
-            USER_POST_COLLECTION_ID,
-            [
-              Query.search("favouritedBy", me.$id),
-              Query.orderDesc("$createdAt"),
-              Query.limit(100),
-            ]
-          );
-
-          const favExact = favRes.documents.filter(
-            (d: any) => typeof d.favouritedBy === "string" && idInList(d.favouritedBy, me.$id)
-          );
-
-          const favWithUrls = favExact.map((doc: any) =>
-            doc.imageUrl
-              ? doc
-              : doc.imageId
-              ? { ...doc, imageUrl: buildFileUrl(USER_POST_BUCKET_ID, doc.imageId) }
-              : doc
-          );
-
-          setFavourites(favWithUrls);
-        } catch {
-          setFavourites([]);
-        }
-      } catch (err) {
-        console.error("[Profile] Failed:", err);
-      } finally {
-        setLoading(false);
+        setFavourites(favWithUrls);
+      } catch {
+        setFavourites([]);
       }
-    })();
+    } catch (err) {
+      console.error("[Profile] Failed:", err);
+    }
   }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
+      await load();
+      if (!cancelled) setLoading(false);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [load]);
+
+  useFocusEffect(
+    useCallback(() => {
+      let alive = true;
+      (async () => {
+        setRefreshing(true);
+        await load();
+        if (alive) setRefreshing(false);
+      })();
+      return () => {
+        alive = false;
+      };
+    }, [load])
+  );
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await load();
+    setRefreshing(false);
+  }, [load]);
 
   const activeDocs = useMemo(
     () => (activeTab === "posts" ? posts : favourites),
@@ -240,6 +275,8 @@ export default function Profile() {
                 </ThemedText>
               </View>
             }
+            refreshing={refreshing}
+            onRefresh={onRefresh}
           />
         )}
       </ThemedView>

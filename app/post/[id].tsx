@@ -5,13 +5,14 @@ import {
   USER_POST_BUCKET_ID,
   USER_POST_COLLECTION_ID,
 } from "@/config/Config";
-import { account, databases } from "@/lib/appwrite";
-import { buildFileUrl, parseIdList, toIdList } from "@/utils/helper"; 
+import { account, databases, storage } from "@/lib/appwrite";
+import { buildFileUrl, parseIdList, toIdList } from "@/utils/helper";
 import { Ionicons } from "@expo/vector-icons";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   Image,
   Pressable,
   ScrollView,
@@ -68,9 +69,7 @@ export default function PostDetail() {
     setToggling(true);
     try {
       const current = parseIdList(doc.favouritedBy);
-      const next = isFav
-        ? current.filter((x) => x !== me.$id)
-        : [...current, me.$id];
+      const next = isFav ? current.filter((x) => x !== me.$id) : [...current, me.$id];
       const updated = toIdList(next);
 
       const result = await databases.updateDocument(
@@ -93,6 +92,47 @@ export default function PostDetail() {
       setToggling(false);
     }
   }, [me?.$id, doc?.$id, doc?.favouritedBy, isFav]);
+
+  const handleDeletePost = useCallback(async () => {
+    if (!me?.$id || !doc?.$id) return;
+    if (me.$id !== doc.userID) return; // only owner can delete
+
+    try {
+      setToggling(true);
+
+
+      if (doc.imageId) {
+        await storage.deleteFile(USER_POST_BUCKET_ID, doc.imageId);
+      }
+
+      await databases.deleteDocument(
+        DATABASE_ID,
+        USER_POST_COLLECTION_ID,
+        doc.$id
+      );
+
+      router.back(); // navigate back after deletion
+    } catch (err) {
+      console.error("Failed to delete post:", err);
+    } finally {
+      setToggling(false);
+    }
+  }, [me?.$id, doc?.$id, doc?.userID]);
+
+  const confirmDeletePost = useCallback(() => {
+    if (!me?.$id || !doc?.$id) return;
+    if (me.$id !== doc.userID) return;
+
+    Alert.alert(
+      "Delete post?",
+      "This action cannot be undone.",
+      [
+        { text: "Cancel", style: "cancel" },
+        { text: "Delete", style: "destructive", onPress: handleDeletePost },
+      ],
+      { cancelable: true }
+    );
+  }, [me?.$id, doc?.$id, doc?.userID, handleDeletePost]);
 
   if (loading) {
     return (
@@ -131,18 +171,36 @@ export default function PostDetail() {
 
               <View style={styles.favRow}>
                 <ThemedText style={styles.favCount}>{favCount}</ThemedText>
-                <Pressable
-                  style={[styles.iconBtn, { marginLeft: 8 }]}
-                  hitSlop={8}
-                  onPress={handleToggleFav}
-                  disabled={toggling}
-                >
-                  <Ionicons
-                    name={isFav ? "heart" : "heart-outline"}
-                    size={22}
-                    color={isFav ? "#FF6B9A" : "#EDEAF8"}
-                  />
-                </Pressable>
+
+                <View style={{ alignItems: "center" }}>
+                  <Pressable
+                    style={[styles.iconBtn, { marginLeft: 8 }]}
+                    hitSlop={8}
+                    onPress={handleToggleFav}
+                    disabled={toggling}
+                    accessibilityRole="button"
+                    accessibilityLabel={isFav ? "Unfavorite" : "Favorite"}
+                  >
+                    <Ionicons
+                      name={isFav ? "heart" : "heart-outline"}
+                      size={22}
+                      color={isFav ? "#FF6B9A" : "#EDEAF8"}
+                    />
+                  </Pressable>
+
+                  {me?.$id === doc?.userID && (
+                    <Pressable
+                      style={[styles.iconBtn, { marginLeft: 8, marginTop: 4 }]}
+                      hitSlop={8}
+                      onPress={confirmDeletePost}
+                      disabled={toggling}
+                      accessibilityRole="button"
+                      accessibilityLabel="Delete post"
+                    >
+                      <Ionicons name="trash-outline" size={20} color="#FF4D4D" />
+                    </Pressable>
+                  )}
+                </View>
               </View>
             </View>
 
@@ -163,8 +221,14 @@ export default function PostDetail() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: "#111111" },
-  screen: { flex: 1, backgroundColor: "#111111" },
+  safe: {
+    flex: 1,
+    backgroundColor: "#111111",
+  },
+  screen: {
+    flex: 1,
+    backgroundColor: "#111111",
+  },
   topBar: {
     height: 52,
     paddingHorizontal: 12,
@@ -178,7 +242,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  content: { paddingHorizontal: 16, paddingBottom: 24 },
+  content: {
+    paddingHorizontal: 16,
+    paddingBottom: 24,
+  },
   card: {
     backgroundColor: "#151515",
     borderRadius: 16,
@@ -207,9 +274,19 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 8,
   },
-  handle: { color: "#EDEAF8", fontWeight: "800", fontSize: 16 },
-  favRow: { flexDirection: "row", alignItems: "center" },
-  favCount: { color: "#C8BEDF", fontSize: 14 },
+  handle: {
+    color: "#EDEAF8",
+    fontWeight: "800",
+    fontSize: 16,
+  },
+  favRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  favCount: {
+    color: "#C8BEDF",
+    fontSize: 14,
+  },
   quote: {
     color: "#EDEAF8",
     fontSize: 16,
@@ -217,7 +294,11 @@ const styles = StyleSheet.create({
     marginTop: 8,
     marginBottom: 6,
   },
-  body: { color: "#C8BEDF", fontSize: 14, lineHeight: 20 },
+  body: {
+    color: "#C8BEDF",
+    fontSize: 14,
+    lineHeight: 20,
+  },
   center: {
     flex: 1,
     alignItems: "center",

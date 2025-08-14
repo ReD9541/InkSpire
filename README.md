@@ -10,13 +10,6 @@ Includes custom design touches like **linear gradients**, **custom icon styles**
 
 ## Demo
 
-- **Android** [Android App Demo](https://youtu.be/NnPIsXiOyio)
-- **iOS** [iOS App Demo](https://youtube.com/shorts/cy7ta0EKUjE?feature=share)
-
----
-
-## Demo
-
 * **Android**  [Android App Demo](https://youtu.be/NnPIsXiOyio)
 * **iOS**  [iOS App Demo](https://youtube.com/shorts/cy7ta0EKUjE?feature=share)
 

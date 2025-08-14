@@ -1,12 +1,12 @@
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import {
-    CHALLENGES_COLLECTION_ID,
-    DATABASE_ID,
-    EXPO_PUBLIC_APPWRITE_ENDPOINT,
-    EXPO_PUBLIC_APPWRITE_PROJECT_ID,
-    USER_POST_BUCKET_ID,
-    USER_POST_COLLECTION_ID,
+  CHALLENGES_COLLECTION_ID,
+  DATABASE_ID,
+  EXPO_PUBLIC_APPWRITE_ENDPOINT,
+  EXPO_PUBLIC_APPWRITE_PROJECT_ID,
+  USER_POST_BUCKET_ID,
+  USER_POST_COLLECTION_ID,
 } from "@/config/Config";
 import { databases } from "@/lib/appwrite";
 import { Ionicons } from "@expo/vector-icons";
@@ -14,13 +14,13 @@ import { LinearGradient } from "expo-linear-gradient";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useMemo, useState } from "react";
 import {
-    ActivityIndicator,
-    Dimensions,
-    FlatList,
-    Image,
-    Pressable,
-    StyleSheet,
-    View,
+  ActivityIndicator,
+  Dimensions,
+  FlatList,
+  Image,
+  Pressable,
+  StyleSheet,
+  View,
 } from "react-native";
 import { Query } from "react-native-appwrite";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -128,7 +128,7 @@ export default function ChallengeFeed() {
             contentContainerStyle={{ paddingBottom: 16 }}
             renderItem={({ item }) => (
               <Pressable
-                onPress={() => router.push(`/post/${item.id}`)}
+                onPress={() => router.push(`../post/${item.id}`)}
                 style={[styles.tile, !item.uri && styles.tileFallback]}
               >
                 {item.uri ? (
@@ -157,6 +157,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#111111",
     paddingHorizontal: 20,
     paddingTop: 8,
+    paddingBottom: 20,
   },
   headerRow: {
     flexDirection: "row",

@@ -156,7 +156,7 @@ export default function PromptFeed() {
             contentContainerStyle={{ paddingBottom: 16 }}
             renderItem={({ item }) => (
               <Pressable
-                onPress={() => router.push(`/post/${item.id}`)}
+                onPress={() => router.push(`../post/${item.id}`)}
                 style={[styles.tile, !item.uri && styles.tileFallback]}
               >
                 {item.uri ? (
@@ -185,6 +185,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#111111",
     paddingHorizontal: 20,
     paddingTop: 8,
+    paddingBottom: 20,
   },
   headerRow: {
     flexDirection: "row",

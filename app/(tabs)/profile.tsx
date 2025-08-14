@@ -70,7 +70,9 @@ export default function Profile() {
         const pdoc: any = prof.documents?.[0];
         if (pdoc) {
           if (pdoc.profilePicId) {
-            setAvatarUri(buildFileUrl(USER_PROFILE_BUCKET_ID, pdoc.profilePicId));
+            setAvatarUri(
+              buildFileUrl(USER_PROFILE_BUCKET_ID, pdoc.profilePicId)
+            );
           } else {
             setAvatarUri(null);
           }
@@ -112,14 +114,19 @@ export default function Profile() {
         );
 
         const favExact = favRes.documents.filter(
-          (d: any) => typeof d.favouritedBy === "string" && idInList(d.favouritedBy, me.$id)
+          (d: any) =>
+            typeof d.favouritedBy === "string" &&
+            idInList(d.favouritedBy, me.$id)
         );
 
         const favWithUrls = favExact.map((doc: any) =>
           doc.imageUrl
             ? doc
             : doc.imageId
-            ? { ...doc, imageUrl: buildFileUrl(USER_POST_BUCKET_ID, doc.imageId) }
+            ? {
+                ...doc,
+                imageUrl: buildFileUrl(USER_POST_BUCKET_ID, doc.imageId),
+              }
             : doc
         );
 
@@ -211,21 +218,33 @@ export default function Profile() {
 
           <View style={styles.toggleWrap}>
             <Pressable
-              style={[styles.toggleBtn, activeTab === "posts" && styles.toggleActive]}
+              style={[
+                styles.toggleBtn,
+                activeTab === "posts" && styles.toggleActive,
+              ]}
               onPress={() => setActiveTab("posts")}
             >
               <ThemedText
-                style={[styles.toggleText, activeTab === "posts" && styles.toggleTextActive]}
+                style={[
+                  styles.toggleText,
+                  activeTab === "posts" && styles.toggleTextActive,
+                ]}
               >
                 Posts
               </ThemedText>
             </Pressable>
             <Pressable
-              style={[styles.toggleBtn, activeTab === "favourites" && styles.toggleActive]}
+              style={[
+                styles.toggleBtn,
+                activeTab === "favourites" && styles.toggleActive,
+              ]}
               onPress={() => setActiveTab("favourites")}
             >
               <ThemedText
-                style={[styles.toggleText, activeTab === "favourites" && styles.toggleTextActive]}
+                style={[
+                  styles.toggleText,
+                  activeTab === "favourites" && styles.toggleTextActive,
+                ]}
               >
                 Favourites
               </ThemedText>
@@ -255,12 +274,18 @@ export default function Profile() {
             renderItem={({ item }) => (
               <Pressable
                 onPress={() =>
-                  router.push({ pathname: "/post/[id]", params: { id: item.$id } })
+                  router.push({
+                    pathname: "/post",
+                    params: { id: item.$id },
+                  })
                 }
                 style={[styles.tile, !item.imageUrl && styles.tileFallback]}
               >
                 {item.imageUrl ? (
-                  <Image source={{ uri: item.imageUrl }} style={styles.tileImg} />
+                  <Image
+                    source={{ uri: item.imageUrl }}
+                    style={styles.tileImg}
+                  />
                 ) : (
                   <ThemedText style={styles.tileEmptyText}>
                     {activeTab === "posts" ? "No Image" : "No Favourite Image"}
@@ -271,7 +296,9 @@ export default function Profile() {
             ListEmptyComponent={
               <View style={{ paddingTop: 40, alignItems: "center" }}>
                 <ThemedText style={{ color: ACCENT }}>
-                  {activeTab === "posts" ? "No posts yet." : "No favourites yet."}
+                  {activeTab === "posts"
+                    ? "No posts yet."
+                    : "No favourites yet."}
                 </ThemedText>
               </View>
             }
@@ -294,6 +321,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#111111",
     paddingHorizontal: 20,
     paddingTop: 8,
+    paddingBottom: 20,
   },
 
   header: {

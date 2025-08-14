@@ -38,7 +38,10 @@ const buildFileUrl = (bucketId: string, fileId: string) =>
 
 const parseCsv = (s?: string | null) =>
   typeof s === "string" && s.trim().length
-    ? s.split(",").map((x) => x.trim()).filter(Boolean)
+    ? s
+        .split(",")
+        .map((x) => x.trim())
+        .filter(Boolean)
     : [];
 
 type ChallengeLite = { $id: string; name?: string; title?: string };
@@ -53,8 +56,15 @@ export default function HomeScreen() {
   useEffect(() => {
     const fetchChallenges = async () => {
       try {
-        const res = await databases.listDocuments(DATABASE_ID, CHALLENGES_COLLECTION_ID);
-        const items = res.documents.map((d: any) => ({ $id: d.$id, name: d.name, title: d.title }));
+        const res = await databases.listDocuments(
+          DATABASE_ID,
+          CHALLENGES_COLLECTION_ID
+        );
+        const items = res.documents.map((d: any) => ({
+          $id: d.$id,
+          name: d.name,
+          title: d.title,
+        }));
         setChallenges(items);
       } catch {}
     };
@@ -174,9 +184,14 @@ export default function HomeScreen() {
         />
 
         <View style={styles.leftPanel}>
-          <ThemedText style={styles.sectionTitle}>Today&apos;s Prompt</ThemedText>
+          <ThemedText style={styles.sectionTitle}>
+            Today&apos;s Prompt
+          </ThemedText>
 
-          <Pressable onPress={() => router.push("/prompt")} style={{ borderRadius: 26 }}>
+          <Pressable
+            onPress={() => router.push("../prompt")}
+            style={{ borderRadius: 26 }}
+          >
             <LinearGradient
               colors={["#C08EFF", "#F0A7F5", "#FFCAA7", "#D5E4B5"]}
               start={[0, 0]}
@@ -204,16 +219,23 @@ export default function HomeScreen() {
             data={challenges}
             keyExtractor={(item) => item.$id}
             renderItem={({ item }) => (
-              <Pressable onPress={() => router.push(`/challenge/${item.$id}`)}>
+              <Pressable
+                onPress={() => router.push(`../challenge/${item.$id}`)}
+              >
                 <View style={styles.challengeCard}>
-                  <ThemedText style={styles.challengeCardText} numberOfLines={1}>
+                  <ThemedText
+                    style={styles.challengeCardText}
+                    numberOfLines={1}
+                  >
                     {item.name || item.title || item.$id}
                   </ThemedText>
                 </View>
               </Pressable>
             )}
             ListEmptyComponent={
-              <ThemedText style={styles.loadingText}>Loading challenges...</ThemedText>
+              <ThemedText style={styles.loadingText}>
+                Loading challenges...
+              </ThemedText>
             }
           />
 
@@ -227,10 +249,13 @@ export default function HomeScreen() {
             renderItem={({ item }) => (
               <Pressable
                 style={styles.postCard}
-                onPress={() => router.push(`/post/${item.id}`)}
+                onPress={() => router.push(`../post/${item.id}`)}
               >
                 {item.imageUrl ? (
-                  <Image source={{ uri: item.imageUrl }} style={styles.postImage} />
+                  <Image
+                    source={{ uri: item.imageUrl }}
+                    style={styles.postImage}
+                  />
                 ) : (
                   <View style={[styles.postImage, styles.postImageFallback]} />
                 )}
@@ -241,23 +266,38 @@ export default function HomeScreen() {
                   </ThemedText>
 
                   <View style={styles.favPill}>
-                    <Ionicons name="heart" size={14} color="#FF6B9A" style={{ marginRight: 4 }} />
-                    <ThemedText style={styles.favText}>{item.favCount}</ThemedText>
+                    <Ionicons
+                      name="heart"
+                      size={14}
+                      color="#FF6B9A"
+                      style={{ marginRight: 4 }}
+                    />
+                    <ThemedText style={styles.favText}>
+                      {item.favCount}
+                    </ThemedText>
                   </View>
                 </View>
               </Pressable>
             )}
             ListEmptyComponent={
               loadingPosts ? (
-                <ThemedText style={styles.loadingText}>Loading posts…</ThemedText>
+                <ThemedText style={styles.loadingText}>
+                  Loading posts…
+                </ThemedText>
               ) : (
-                <ThemedText style={styles.loadingText}>No posts yet.</ThemedText>
+                <ThemedText style={styles.loadingText}>
+                  No posts yet.
+                </ThemedText>
               )
             }
             style={{ maxHeight: 520 }}
             showsVerticalScrollIndicator={false}
             refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={ACCENT} />
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                tintColor={ACCENT}
+              />
             }
           />
         </View>
@@ -267,14 +307,47 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: "#111111" },
-  container: { flex: 1, backgroundColor: "#111111", paddingHorizontal: 20, paddingTop: 8 },
-  titleRow: { flexDirection: "row", alignItems: "center", justifyContent: "center", marginBottom: 12 },
-  logo: { width: 120, height: 120, marginRight: 10, resizeMode: "contain", borderRadius: 45 },
-  appTitle: { color: "#FFE6EC", fontSize: 34, fontWeight: "800", letterSpacing: 0.5, lineHeight: 40, paddingTop: 2 },
+  safe: {
+     flex: 1,
+     backgroundColor: "#111111", },
+  container: {
+    flex: 1,
+    backgroundColor: "#111111",
+    paddingHorizontal: 20,
+    paddingTop: 8,
+    paddingBottom: 20,
+  },
+  titleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 12,
+  },
+  logo: {
+    width: 120,
+    height: 120,
+    marginRight: 10,
+    resizeMode: "contain",
+    borderRadius: 45,
+  },
+  appTitle: {
+    color: "#FFE6EC",
+    fontSize: 34,
+    fontWeight: "800",
+    letterSpacing: 0.5,
+    lineHeight: 40,
+    paddingTop: 2,
+  },
   brandDivider: { height: 3, borderRadius: 3, marginBottom: 18 },
   leftPanel: { flex: 1 },
-  sectionTitle: { color: "#FFE6EC", fontSize: 20, fontWeight: "700", marginBottom: 12, lineHeight: 24, textAlign: "center" },
+  sectionTitle: {
+    color: "#FFE6EC",
+    fontSize: 20,
+    fontWeight: "700",
+    marginBottom: 12,
+    lineHeight: 24,
+    textAlign: "center",
+  },
   promptWrapper: { borderRadius: 26, padding: 2, marginBottom: 24 },
   promptBox: {
     backgroundColor: "#181818",
@@ -289,8 +362,18 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 6,
   },
-  promptText: { fontSize: 20, fontStyle: "italic", textAlign: "center", color: "#EDEAF8" },
-  promptSubText: { marginTop: 10, fontSize: 14, color: "#C08EFF", textAlign: "center" },
+  promptText: {
+    fontSize: 20,
+    fontStyle: "italic",
+    textAlign: "center",
+    color: "#EDEAF8",
+  },
+  promptSubText: {
+    marginTop: 10,
+    fontSize: 14,
+    color: "#C08EFF",
+    textAlign: "center",
+  },
   challengeCard: {
     backgroundColor: "#181818",
     paddingHorizontal: 14,
@@ -303,12 +386,40 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: ACCENT,
   },
-  challengeCardText: { fontWeight: "800", fontSize: 16, color: "#FFE6EC",paddingBottom:16, },
-  postCard: { backgroundColor: "#181818", borderRadius: 20, padding: 10, marginBottom: 14, borderWidth: 1, borderColor: "#2B2B2B" },
-  postImage: { width: "100%", aspectRatio: 1.2, borderRadius: 14, marginBottom: 10, backgroundColor: "#1A1A1A" },
+  challengeCardText: {
+    fontWeight: "800",
+    fontSize: 16,
+    color: "#FFE6EC",
+    paddingBottom: 16,
+  },
+  postCard: {
+    backgroundColor: "#181818",
+    borderRadius: 20,
+    padding: 10,
+    marginBottom: 14,
+    borderWidth: 1,
+    borderColor: "#2B2B2B",
+  },
+  postImage: {
+    width: "100%",
+    aspectRatio: 1.2,
+    borderRadius: 14,
+    marginBottom: 10,
+    backgroundColor: "#1A1A1A",
+  },
   postImageFallback: { borderWidth: 1, borderColor: "#2B2B2B" },
-  postRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
-  postTitle: { fontWeight: "800", fontSize: 16, color: "#FFE6EC", flexShrink: 1, paddingRight: 8 },
+  postRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  postTitle: {
+    fontWeight: "800",
+    fontSize: 16,
+    color: "#FFE6EC",
+    flexShrink: 1,
+    paddingRight: 8,
+  },
   favPill: {
     flexDirection: "row",
     alignItems: "center",

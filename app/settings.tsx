@@ -2,13 +2,12 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import {
   DATABASE_ID,
-  EXPO_PUBLIC_APPWRITE_ENDPOINT,
-  EXPO_PUBLIC_APPWRITE_PROJECT_ID,
   USER_PROFILE_BUCKET_ID,
   USER_PROFILE_COLLECTION_ID,
 } from "@/config/Config";
+import { account, databases, storage } from "@/lib/appwrite";
+import { buildFileUrl, pickImage } from "@/utils/helper";
 import { Feather, Ionicons } from "@expo/vector-icons";
-import * as ImagePicker from "expo-image-picker";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
@@ -25,38 +24,13 @@ import {
   TextInput,
   View,
 } from "react-native";
-import {
-  Account,
-  Client,
-  Databases,
-  ID,
-  Permission,
-  Query,
-  Role,
-  Storage,
-} from "react-native-appwrite";
+import { ID, Permission, Query, Role } from "react-native-appwrite";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-// Define constants for layout
+// Defines constants for layout
 const ACCENT = "#C08EFF";
 
-const client = new Client()
-  .setEndpoint(EXPO_PUBLIC_APPWRITE_ENDPOINT)
-  .setProject(EXPO_PUBLIC_APPWRITE_PROJECT_ID);
-
-const storage = new Storage(client);
-const databases = new Databases(client);
-const account = new Account(client);
-
-// Function to build the file URL for Appwrite storage
-const buildFileUrl = (bucketId: string, fileId: string) =>
-  `${EXPO_PUBLIC_APPWRITE_ENDPOINT}/storage/buckets/${encodeURIComponent(
-    bucketId
-  )}/files/${encodeURIComponent(fileId)}/view?project=${encodeURIComponent(
-    EXPO_PUBLIC_APPWRITE_PROJECT_ID
-  )}`;
-
-// Define the Profile document type
+// Defines the Profile document type
 type ProfileDoc = {
   $id: string;
   Userid: string;
@@ -64,7 +38,7 @@ type ProfileDoc = {
   profilePicId?: string | null;
 };
 
-// Define the Settings component
+// Defines the Settings component
 const Settings: React.FC = () => {
   // Define state variables
   const [user, setUser] = useState<any>(null);
@@ -124,54 +98,42 @@ const Settings: React.FC = () => {
     };
   }, []);
 
-  // Function to pick an image from the gallery
-  const pickImage = useCallback(async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images"],
-      allowsEditing: false,
-      aspect: [4, 4],
-      quality: 1,
-    });
-    if (!result.canceled && result.assets?.[0]) {
-      setLocalUri(result.assets[0].uri);
+  // Handle picking an image
+  const handlePickImage = async () => {
+    const uri = await pickImage({ aspect: [4, 4] });
+    if (uri) {
+      setLocalUri(uri);
     }
-  }, []);
+  };
 
-  // Function to handle saving the profile
   const handleSave = useCallback(async () => {
     try {
-      // Ensure the user is authenticated
       const me = await account.get().catch(() => {
         throw new Error("You need to be signed in to update your profile.");
       });
-      // Get the current user ID and name
       const { $id: userId, name: currentName } = me;
       if (!docId) throw new Error("Profile document not initialized yet.");
       setSaving(true);
 
-      // Update the display name if it has changed
       const trimmedName = displayName.trim();
       if (trimmedName && trimmedName !== currentName) {
         await account.updateName(trimmedName);
       }
 
-      // Upload the new profile picture if it has changed
       let newPicId: string | null = null;
       if (localUri) {
         const file = {
           uri: localUri,
           type: "image/jpeg",
           name: "profile.jpg",
-          size: 0,
+          size: 0, 
         };
-        // Upload the file to Appwrite storage
         const filePermissions = [
           Permission.read(Role.any()),
           Permission.update(Role.user(userId)),
           Permission.delete(Role.user(userId)),
           Permission.write(Role.user(userId)),
         ];
-        // Create the file in Appwrite storage
         const uploaded = await storage.createFile(
           USER_PROFILE_BUCKET_ID,
           ID.unique(),
@@ -181,7 +143,6 @@ const Settings: React.FC = () => {
         newPicId = uploaded.$id;
       }
 
-      // Update the profile document in the database
       await databases.updateDocument(
         DATABASE_ID,
         USER_PROFILE_COLLECTION_ID,
@@ -193,11 +154,9 @@ const Settings: React.FC = () => {
         }
       );
 
-      // Refresh the user session
       const refreshed = await account.get();
       setUser(refreshed);
 
-      // Update local state with new profile picture
       if (newPicId) {
         setCurrentPicId(newPicId);
         setRemoteUrl(buildFileUrl(USER_PROFILE_BUCKET_ID, newPicId));
@@ -213,7 +172,6 @@ const Settings: React.FC = () => {
     }
   }, [bio, localUri, currentPicId, docId, displayName]);
 
-  // Function to handle signing out
   const handleSignOut = useCallback(async () => {
     try {
       await account.deleteSession("current");
@@ -221,13 +179,11 @@ const Settings: React.FC = () => {
     router.replace("/");
   }, []);
 
-  // cached value for the preview source
   const previewSrc = useMemo(
     () => localUri ?? remoteUrl ?? null,
     [localUri, remoteUrl]
   );
 
-  // Loading state
   if (loading) {
     return (
       <SafeAreaView style={styles.safe} edges={["top"]}>
@@ -278,7 +234,7 @@ const Settings: React.FC = () => {
               </Pressable>
             </View>
 
-            <Pressable style={styles.uploadInner} onPress={pickImage}>
+            <Pressable style={styles.uploadInner} onPress={handlePickImage}>
               {previewSrc ? (
                 <>
                   <Image

@@ -2,20 +2,18 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import {
   DATABASE_ID,
-  EXPO_PUBLIC_APPWRITE_ENDPOINT,
-  EXPO_PUBLIC_APPWRITE_PROJECT_ID,
   USER_POST_BUCKET_ID,
   USER_POST_COLLECTION_ID,
   USER_PROFILE_BUCKET_ID,
   USER_PROFILE_COLLECTION_ID,
 } from "@/config/Config";
 import { account, databases } from "@/lib/appwrite";
+import { buildFileUrl, idInList, TILE_SIZE } from "@/utils/helper";
 import { LinearGradient } from "expo-linear-gradient";
 import { router, useFocusEffect } from "expo-router";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
-  Dimensions,
   FlatList,
   Image,
   Pressable,
@@ -25,31 +23,12 @@ import {
 import { Query } from "react-native-appwrite";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-
 // Define constants for layout
 const ACCENT = "#C08EFF";
-const SCREEN_W = Dimensions.get("window").width;
-const H_PADDING = 20;
 const GAP = 6;
 const COLS = 3;
-const TILE = Math.floor((SCREEN_W - H_PADDING * 2 - GAP * (COLS - 1)) / COLS);
-
-// Function to build the file URL for Appwrite storage
-const buildFileUrl = (bucketId: string, fileId: string) =>
-  `${EXPO_PUBLIC_APPWRITE_ENDPOINT}/storage/buckets/${encodeURIComponent(
-    bucketId
-  )}/files/${encodeURIComponent(fileId)}/view?project=${encodeURIComponent(
-    EXPO_PUBLIC_APPWRITE_PROJECT_ID
-  )}`;
-
-  // Function to check if an ID is in a list
-const idInList = (list: string, id: string) => {
-  const parts = list.split(/[\s,;|]+/).filter(Boolean);
-  return parts.some((p) => p === id);
-};
 
 export default function Profile() {
-
   // Define state variables
   const [user, setUser] = useState<any>(null);
   const [posts, setPosts] = useState<any[]>([]);
@@ -431,8 +410,8 @@ const styles = StyleSheet.create({
   },
 
   tile: {
-    width: TILE,
-    height: TILE,
+    width: TILE_SIZE,
+    height: TILE_SIZE,
     borderRadius: 10,
     overflow: "hidden",
     backgroundColor: "#1A1A1A",

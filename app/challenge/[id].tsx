@@ -3,19 +3,17 @@ import { ThemedView } from "@/components/ThemedView";
 import {
   CHALLENGES_COLLECTION_ID,
   DATABASE_ID,
-  EXPO_PUBLIC_APPWRITE_ENDPOINT,
-  EXPO_PUBLIC_APPWRITE_PROJECT_ID,
   USER_POST_BUCKET_ID,
   USER_POST_COLLECTION_ID,
 } from "@/config/Config";
 import { databases } from "@/lib/appwrite";
+import { buildFileUrl, TILE_SIZE } from "@/utils/helper"; 
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
-  Dimensions,
   FlatList,
   Image,
   Pressable,
@@ -27,21 +25,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 // Define constants for layout
 const ACCENT = "#C08EFF";
-const SCREEN_W = Dimensions.get("window").width;
-const H_PADDING = 20;
 const GAP = 6;
 const COLS = 3;
-const TILE = Math.floor((SCREEN_W - H_PADDING * 2 - GAP * (COLS - 1)) / COLS);
-
-// Function to build the file URL for Appwrite storage
-const buildFileUrl = (bucketId: string, fileId: string) =>
-  `${EXPO_PUBLIC_APPWRITE_ENDPOINT}/storage/buckets/${encodeURIComponent(
-    bucketId
-  )}/files/${encodeURIComponent(fileId)}/view?project=${encodeURIComponent(
-    EXPO_PUBLIC_APPWRITE_PROJECT_ID
-  )}`;
 
 export default function ChallengeFeed() {
+  // Get the challenge ID from the route parameters
   const { id } = useLocalSearchParams<{ id: string }>();
   const [title, setTitle] = useState<string>(id || "Challenge");
   const [posts, setPosts] = useState<any[]>([]);
@@ -101,14 +89,12 @@ export default function ChallengeFeed() {
       <ThemedView style={styles.container}>
         <View style={styles.headerRow}>
           <Pressable onPress={() => router.back()} style={styles.backBtn}>
-            <Pressable onPress={() => router.back()} style={styles.backBtn}>
-              <Ionicons name="arrow-back" size={28} color="#EDEAF8" />
-            </Pressable>
+            <Ionicons name="arrow-back" size={28} color="#EDEAF8" />
           </Pressable>
           <ThemedText style={styles.title} numberOfLines={1}>
             {title}
           </ThemedText>
-          <View style={{ width: 24 }} />
+          <View style={{ width: 48 }} />
         </View>
 
         <LinearGradient
@@ -155,10 +141,10 @@ export default function ChallengeFeed() {
 }
 
 const styles = StyleSheet.create({
-  safe: { 
+  safe: {
     flex: 1,
-     backgroundColor: "#111111",
-     },
+    backgroundColor: "#111111",
+  },
   container: {
     flex: 1,
     backgroundColor: "#111111",
@@ -172,22 +158,28 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 8,
   },
-  backBtn: { 
-    padding: 8 ,
+  backBtn: {
+    padding: 8,
+    width: 48,
+    height: 48,
+    alignItems: "center",
+    justifyContent: "center",
   },
-  title: { 
+  title: {
     color: "#FFE6EC",
     fontSize: 22,
-    fontWeight: "800"
+    fontWeight: "800",
+    flex: 1,
+    textAlign: "center",
   },
   brandDivider: {
     height: 3,
     borderRadius: 3,
-    marginBottom: 12
+    marginBottom: 12,
   },
   tile: {
-    width: TILE,
-    height: TILE,
+    width: TILE_SIZE,
+    height: TILE_SIZE,
     borderRadius: 10,
     overflow: "hidden",
     backgroundColor: "#1A1A1A",
@@ -198,7 +190,7 @@ const styles = StyleSheet.create({
   tileImg: {
     width: "100%",
     height: "100%",
-    resizeMode: "cover"
+    resizeMode: "cover",
   },
   tileFallback: {
     alignItems: "center",
@@ -207,11 +199,11 @@ const styles = StyleSheet.create({
   },
   tileEmptyText: {
     color: ACCENT,
-    fontSize: 12
+    fontSize: 12,
   },
   loaderWrap: {
     flex: 1,
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
   },
 });

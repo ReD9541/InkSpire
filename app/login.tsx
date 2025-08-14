@@ -3,6 +3,7 @@ import { ThemedView } from "@/components/ThemedView";
 import { ValidIndicator } from "@/components/ui/ValidIndicator";
 import { AuthContext } from "@/contexts/AuthContext";
 import { account } from "@/lib/appwrite";
+import { isValidEmail, isValidPassword } from "@/utils/helper";
 import { LinearGradient } from "expo-linear-gradient";
 import { Link, router } from "expo-router";
 import { useContext, useEffect, useState } from "react";
@@ -22,12 +23,14 @@ export default function Login() {
   // Define state variables
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [validEmail, setValidEmail] = useState(false);
-  const [validPassword, setValidPassword] = useState(false);
   const [auth, setAuth] = useState(null);
   const [rememberMe, setRememberMe] = useState(false);
 
   const user = useContext(AuthContext);
+
+  // validate email and password
+  const validEmail = isValidEmail(email);
+  const validPassword = isValidPassword(password);
 
   // Handle login
   const login = async () => {
@@ -44,14 +47,6 @@ export default function Login() {
       router.navigate("/(tabs)");
     }
   }, [auth]);
-
-  useEffect(() => {
-    setValidEmail(email.includes("@"));
-  }, [email]);
-
-  useEffect(() => {
-    setValidPassword(password.length >= 8);
-  }, [password]);
 
   return (
     <KeyboardAvoidingView
@@ -81,6 +76,8 @@ export default function Login() {
             placeholderTextColor="#999"
             value={email}
             onChangeText={setEmail}
+            autoCapitalize="none"
+            keyboardType="email-address"
           />
 
           <View style={styles.labelRow}>

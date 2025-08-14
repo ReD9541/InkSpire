@@ -1,5 +1,4 @@
 import { HapticTab } from "@/components/HapticTab";
-import { LinearGradient } from "expo-linear-gradient";
 import { Tabs } from "expo-router";
 import React from "react";
 import { Image, StyleSheet, View } from "react-native";
@@ -7,30 +6,7 @@ import { Image, StyleSheet, View } from "react-native";
 const ACTIVE = "#FFE6EC";
 const INACTIVE = "#8F86A8";
 
-// Tab icon wrapper with glow effect
-function IconWithGlow({
-  focused,
-  children,
-}: {
-  focused: boolean;
-  children: React.ReactNode;
-}) {
-  return (
-    <View style={styles.iconWrap}>
-      {focused && (
-        <LinearGradient
-          colors={["#C08EFF55", "#F0A7F555", "#FFCAA755"]}
-          start={[0, 0]}
-          end={[1, 1]}
-          style={styles.glow}
-        />
-      )}
-      {children}
-    </View>
-  );
-}
-
-// Function to use our custom TabIcon component
+// Custom tabicon for the app
 function TabIcon({
   focused,
   src,
@@ -41,7 +17,7 @@ function TabIcon({
   size?: number;
 }) {
   return (
-    <IconWithGlow focused={focused}>
+    <View style={styles.iconWrap}>
       <Image
         source={src}
         style={[
@@ -50,7 +26,7 @@ function TabIcon({
         ]}
         resizeMode="contain"
       />
-    </IconWithGlow>
+    </View>
   );
 }
 
@@ -135,16 +111,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginTop: 30,
-  },
-  glow: {
-    position: "absolute",
-    borderRadius: 40,
-    backgroundColor: "rgba(255, 230, 236, 0.05)",
-    shadowColor: "rgba(255, 230, 236, 1)",
-    shadowOpacity: 0.2,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 0 },
-    elevation: 0,
   },
   iconImg: {
     width: 40,

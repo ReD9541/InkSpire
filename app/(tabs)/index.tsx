@@ -3,13 +3,12 @@ import { ThemedView } from "@/components/ThemedView";
 import {
   CHALLENGES_COLLECTION_ID,
   DATABASE_ID,
-  EXPO_PUBLIC_APPWRITE_ENDPOINT,
-  EXPO_PUBLIC_APPWRITE_PROJECT_ID,
   PROMPTS_COLLECTION_ID,
   USER_POST_BUCKET_ID,
   USER_POST_COLLECTION_ID,
 } from "@/config/Config";
 import { databases } from "@/lib/appwrite";
+import { buildFileUrl, parseIdList } from "@/utils/helper";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
@@ -30,27 +29,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 const screenWidth = Dimensions.get("window").width;
 const ACCENT = "#C08EFF";
 
-// Function to build the file URL for Appwrite storage
-const buildFileUrl = (bucketId: string, fileId: string) =>
-  `${EXPO_PUBLIC_APPWRITE_ENDPOINT}/storage/buckets/${encodeURIComponent(
-    bucketId
-  )}/files/${encodeURIComponent(fileId)}/view?project=${encodeURIComponent(
-    EXPO_PUBLIC_APPWRITE_PROJECT_ID
-  )}`;
-
-// Function to parse CSV strings into arrays
-const parseCsv = (s?: string | null) =>
-  typeof s === "string" && s.trim().length
-    ? s
-        .split(",")
-        .map((x) => x.trim())
-        .filter(Boolean)
-    : [];
-
 // Type definition for challenge objects
 type ChallengeLite = { $id: string; name?: string; title?: string };
 
 export default function HomeScreen() {
+  // State variables
   const [challenges, setChallenges] = useState<ChallengeLite[]>([]);
   const [prompt, setPrompt] = useState<string | null>(null);
   const [posts, setPosts] = useState<any[]>([]);
@@ -137,7 +120,7 @@ export default function HomeScreen() {
         const imageUrl =
           doc.imageUrl ||
           (doc.imageId ? buildFileUrl(USER_POST_BUCKET_ID, doc.imageId) : null);
-        const favCount = parseCsv(doc.favouritedBy).length;
+        const favCount = parseIdList(doc.favouritedBy).length;
         return { ...doc, imageUrl, favCount };
       });
 
@@ -349,8 +332,14 @@ const styles = StyleSheet.create({
     lineHeight: 40,
     paddingTop: 2,
   },
-  brandDivider: { height: 3, borderRadius: 3, marginBottom: 18 },
-  leftPanel: { flex: 1 },
+  brandDivider: {
+    height: 3,
+    borderRadius: 3,
+    marginBottom: 18
+  },
+  leftPanel: {
+    flex: 1
+  },
   sectionTitle: {
     color: "#FFE6EC",
     fontSize: 20,
@@ -359,7 +348,11 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     textAlign: "center",
   },
-  promptWrapper: { borderRadius: 26, padding: 2, marginBottom: 24 },
+  promptWrapper: {
+    borderRadius: 26,
+    padding: 2,
+    marginBottom: 24
+  },
   promptBox: {
     backgroundColor: "#181818",
     borderRadius: 24,
@@ -418,7 +411,10 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     backgroundColor: "#1A1A1A",
   },
-  postImageFallback: { borderWidth: 1, borderColor: "#2B2B2B" },
+  postImageFallback: {
+    borderWidth: 1,
+    borderColor: "#2B2B2B"
+  },
   postRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -441,6 +437,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#2B2B2B",
   },
-  favText: { color: "#D2CFE6", fontSize: 13, fontWeight: "700" },
-  loadingText: { color: ACCENT },
+  favText: { 
+    color: "#D2CFE6",
+    fontSize: 13,
+    fontWeight: "700"
+  },
+  loadingText: {
+    color: ACCENT,
+    fontSize: 14,
+    fontWeight: "500"
+   },
 });

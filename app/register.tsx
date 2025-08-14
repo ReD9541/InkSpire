@@ -2,6 +2,7 @@ import { ThemedView } from "@/components/ThemedView";
 import { ValidIndicator } from "@/components/ui/ValidIndicator";
 import { AuthContext } from "@/contexts/AuthContext";
 import { account } from "@/lib/appwrite";
+import { isValidEmail, isValidPassword } from "@/utils/helper"; 
 import { LinearGradient } from "expo-linear-gradient";
 import { Link, router } from "expo-router";
 import { useContext, useEffect, useState } from "react";
@@ -19,26 +20,27 @@ import {
 import { ID } from "react-native-appwrite";
 
 export default function Register() {
-
   // Define state variables
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [retypePassword, setRetypePassword] = useState("");
-  const [validEmail, setValidEmail] = useState(false);
-  const [validPassword, setValidPassword] = useState(false);
-  const [passwordsMatch, setPasswordsMatch] = useState(false);
   const [acceptedTnC, setAcceptedTnC] = useState(false);
   const [auth, setAuth] = useState(null);
 
   const user = useContext(AuthContext);
 
-  // Check if the form can be submitted
-  const canSubmit =
-    validEmail && validPassword && passwordsMatch && acceptedTnC;
+  // Validate email and password
+  const validEmail = isValidEmail(email);
+  const validPassword = isValidPassword(password);
+  const passwordsMatch = password === retypePassword && retypePassword.length > 0;
 
-    // Handle registration
+  // Check if the form can be submitted
+  const canSubmit = validEmail && validPassword && passwordsMatch && acceptedTnC;
+
+  // Handle registration
   const register = async () => {
+    if (!canSubmit) return; 
     try {
       await account.create(ID.unique(), email, password, name);
       const session = await user.createEmailPasswordSession(email, password);
@@ -53,18 +55,6 @@ export default function Register() {
       router.navigate("/(tabs)");
     }
   }, [auth]);
-
-  useEffect(() => {
-    setValidEmail(email.includes("@"));
-  }, [email]);
-
-  useEffect(() => {
-    setValidPassword(password.length >= 8);
-  }, [password]);
-
-  useEffect(() => {
-    setPasswordsMatch(retypePassword === password && retypePassword.length > 0);
-  }, [retypePassword, password]);
 
   return (
     <KeyboardAvoidingView
@@ -94,6 +84,8 @@ export default function Register() {
             placeholderTextColor="#999"
             value={email}
             onChangeText={setEmail}
+            autoCapitalize="none"
+            keyboardType="email-address"
           />
           <LinearGradient
             colors={["#C08EFF", "#F0A7F5", "#FFCAA7", "#D5E4B5"]}

@@ -2,12 +2,11 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import {
   DATABASE_ID,
-  EXPO_PUBLIC_APPWRITE_ENDPOINT,
-  EXPO_PUBLIC_APPWRITE_PROJECT_ID,
   USER_POST_BUCKET_ID,
   USER_POST_COLLECTION_ID,
 } from "@/config/Config";
 import { account, databases } from "@/lib/appwrite";
+import { buildFileUrl, parseIdList, toIdList } from "@/utils/helper"; 
 import { Ionicons } from "@expo/vector-icons";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
@@ -23,24 +22,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 const ACCENT = "#C08EFF";
 
-const buildFileUrl = (bucketId: string, fileId: string) =>
-  `${EXPO_PUBLIC_APPWRITE_ENDPOINT}/storage/buckets/${encodeURIComponent(
-    bucketId
-  )}/files/${encodeURIComponent(fileId)}/view?project=${encodeURIComponent(
-    EXPO_PUBLIC_APPWRITE_PROJECT_ID
-  )}`;
-
-const parseCsv = (s?: string | null) =>
-  typeof s === "string" && s.trim().length
-    ? s
-        .split(",")
-        .map((x) => x.trim())
-        .filter(Boolean)
-    : [];
-
-const toCsv = (arr: string[]) => Array.from(new Set(arr)).join(",");
-
 export default function PostDetail() {
+  // Get the post ID from the route parameters
   const { id } = useLocalSearchParams<{ id: string }>();
   const [me, setMe] = useState<any>(null);
   const [doc, setDoc] = useState<any>(null);
@@ -74,7 +57,7 @@ export default function PostDetail() {
   }, [id]);
 
   const favIds = useMemo(
-    () => parseCsv(doc?.favouritedBy),
+    () => parseIdList(doc?.favouritedBy),
     [doc?.favouritedBy]
   );
   const isFav = me?.$id ? favIds.includes(me.$id) : false;
@@ -84,11 +67,11 @@ export default function PostDetail() {
     if (!me?.$id || !doc?.$id) return;
     setToggling(true);
     try {
-      const current = parseCsv(doc.favouritedBy);
+      const current = parseIdList(doc.favouritedBy);
       const next = isFav
         ? current.filter((x) => x !== me.$id)
         : [...current, me.$id];
-      const updated = toCsv(next);
+      const updated = toIdList(next);
 
       const result = await databases.updateDocument(
         DATABASE_ID,

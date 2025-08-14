@@ -1,48 +1,37 @@
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import { CHALLENGES_COLLECTION_ID, DATABASE_ID, EXPO_PUBLIC_APPWRITE_ENDPOINT, EXPO_PUBLIC_APPWRITE_PROJECT_ID, PROMPTS_COLLECTION_ID, USER_POST_BUCKET_ID, USER_POST_COLLECTION_ID } from "@/config/Config";
-import * as ImagePicker from "expo-image-picker";
+import { CHALLENGES_COLLECTION_ID, DATABASE_ID, PROMPTS_COLLECTION_ID, USER_POST_BUCKET_ID, USER_POST_COLLECTION_ID } from "@/config/Config";
+import { account, databases, storage } from "@/lib/appwrite";
+import { pickImage } from "@/utils/helper";
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, Alert, Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
-import { Account, Client, Databases, ID, Permission, Query, Role, Storage } from "react-native-appwrite";
+import { ID, Permission, Query, Role } from "react-native-appwrite";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const ACCENT = "#C08EFF";
 
-const client = new Client()
-  .setEndpoint(EXPO_PUBLIC_APPWRITE_ENDPOINT)
-  .setProject(EXPO_PUBLIC_APPWRITE_PROJECT_ID);
-
-const storage = new Storage(client);
-const databases = new Databases(client);
-const account = new Account(client);
-
-
-// Document type for challenges (content from challanges collection in the database)
+// Document type for challenges
 type ChallengeDoc = {
   $id: string;
   name?: string;
   title?: string;
 };
 
-
 export default function Create() {
-
   // State variables for post creation
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-
   const [challenges, setChallenges] = useState<ChallengeDoc[]>([]);
   const [selectedChallengeId, setSelectedChallengeId] = useState<string>("");
-
   const [localUri, setLocalUri] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
 
   // Fetch challenges and prompts on load
-
   useEffect(() => {
-    // Fetch challenges from the database
+    let cancelled = false;
+
+    // Fetch challenges
     const fetchChallenges = async () => {
       try {
         const res = await databases.listDocuments(
@@ -58,7 +47,7 @@ export default function Create() {
       }
     };
 
-    // Fetch prompts and prefill the title for uploading the post
+    // Fetch prompt and prefill title
     const fetchPromptAndPrefill = async () => {
       try {
         const now = new Date();
@@ -79,7 +68,6 @@ export default function Create() {
         );
 
         let promptText: string | null = null;
-
         if (todayRes.documents.length > 0) {
           promptText = todayRes.documents[0].text as string;
         } else {
@@ -100,11 +88,9 @@ export default function Create() {
         if (!cancelled && promptText && !title.trim()) {
           setTitle(promptText);
         }
-      } catch (err) {
-      }
+      } catch (err) {}
     };
 
-    let cancelled = false;
     fetchChallenges();
     fetchPromptAndPrefill();
 
@@ -113,32 +99,15 @@ export default function Create() {
     };
   }, [title]);
 
-  // Cached challenge label for displaying in the dropdown
-  const challengeLabel = useCallback((c: ChallengeDoc) => {
-    return c.name || c.title || c.$id;
-  }, []);
-
-  // Cached selected challenge name for dropdown for selection
-  const selectedChallengeName = useMemo(() => {
-    const found = challenges.find((c) => c.$id === selectedChallengeId);
-    return found ? challengeLabel(found) : "Select Challenge";
-  }, [challenges, selectedChallengeId, challengeLabel]);
-
-  // Pick an image from the gallery using expo image picker
-  const pickImage = useCallback(async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
-      allowsEditing: false,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    if (!result.canceled && result.assets?.[0]) {
-      setLocalUri(result.assets[0].uri);
+  // Handle image selection
+  const handlePickImage = async () => {
+    const uri = await pickImage({ aspect: [4, 3] });
+    if (uri) {
+      setLocalUri(uri);
     }
-  }, []);
+  };
 
-  // Handle post creation, validating inputs and uploading to Appwrite
+  // Handle post creation
   const handleCreatePost = useCallback(async () => {
     if (!selectedChallengeId) {
       Alert.alert("Missing Challenge", "Please select a challenge.");
@@ -167,8 +136,7 @@ export default function Create() {
         size: 0,
       };
 
-      // Set file permissions
-      const filePermissions = [
+      const permissions = [
         Permission.read(Role.any()),
         Permission.update(Role.user(userId)),
         Permission.delete(Role.user(userId)),
@@ -179,18 +147,9 @@ export default function Create() {
         USER_POST_BUCKET_ID,
         ID.unique(),
         file,
-        filePermissions
+        permissions
       );
 
-      // Set document permissions
-      const docPermissions = [
-        Permission.read(Role.any()),
-        Permission.update(Role.user(userId)),
-        Permission.delete(Role.user(userId)),
-        Permission.write(Role.user(userId)),
-      ];
-
-      // Create the post document
       await databases.createDocument(
         DATABASE_ID,
         USER_POST_COLLECTION_ID,
@@ -203,12 +162,11 @@ export default function Create() {
           favouritedBy: "",
           userID: userId,
         },
-        docPermissions
+        permissions
       );
 
-      // Show success message
+      // Clear form after successful post creation
       Alert.alert("Success", "Your post has been created!");
-
       setTitle("");
       setContent("");
       setLocalUri(null);
@@ -245,7 +203,7 @@ export default function Create() {
               end={[1, 1]}
               style={styles.uploadWrapper}
             >
-              <Pressable style={styles.uploadInner} onPress={pickImage}>
+              <Pressable style={styles.uploadInner} onPress={handlePickImage}>
                 {localUri ? (
                   <>
                     <Image
@@ -322,7 +280,11 @@ export default function Create() {
               onChangeText={setTitle}
             />
 
-            <Pressable onPress={handleCreatePost} style={styles.pill} disabled={uploading}>
+            <Pressable
+              onPress={handleCreatePost}
+              style={styles.pill}
+              disabled={uploading}
+            >
               <LinearGradient
                 colors={["#C08EFF", "#F0A7F5", "#FFCAA7"]}
                 start={[0, 0]}
@@ -355,7 +317,6 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     paddingBottom: 20,
   },
-
   header: {
     flexDirection: "row",
     alignItems: "center",
@@ -374,7 +335,6 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
     borderRadius: 45,
   },
-
   uploadWrapper: {
     borderRadius: 18,
     padding: 2,
@@ -411,7 +371,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "rgba(0,0,0,0.35)",
   },
-
   fieldLabel: {
     color: "#FFE6EC",
     fontWeight: "700",
@@ -419,7 +378,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     marginTop: 6,
   },
-
   inputDark: {
     backgroundColor: "#181818",
     borderRadius: 16,
@@ -435,7 +393,6 @@ const styles = StyleSheet.create({
     minHeight: 100,
     textAlignVertical: "top",
   },
-
   dropdown: {
     flexDirection: "row",
     alignItems: "center",
@@ -445,12 +402,6 @@ const styles = StyleSheet.create({
     color: "#EDEAF8",
     fontSize: 16,
   },
-  chevron: {
-    color: "#C8BEDF",
-    fontSize: 18,
-    marginLeft: 10,
-  },
-
   chip: {
     borderRadius: 999,
     paddingVertical: 6,
@@ -464,7 +415,6 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 14,
   },
-
   pill: {
     borderRadius: 28,
     overflow: "hidden",

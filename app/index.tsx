@@ -14,6 +14,7 @@ import {
   View,
 } from "react-native";
 
+// Define constants for layout
 const { height: screenHeight } = Dimensions.get("window");
 const HERO_IMAGE_HEIGHT = screenHeight * 0.41;
 

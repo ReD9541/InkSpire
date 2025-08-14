@@ -25,6 +25,8 @@ import {
 import { Query } from "react-native-appwrite";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+
+// Define constants for layout
 const ACCENT = "#C08EFF";
 const SCREEN_W = Dimensions.get("window").width;
 const H_PADDING = 20;
@@ -32,6 +34,7 @@ const GAP = 6;
 const COLS = 3;
 const TILE = Math.floor((SCREEN_W - H_PADDING * 2 - GAP * (COLS - 1)) / COLS);
 
+// Function to build the file URL for Appwrite storage
 const buildFileUrl = (bucketId: string, fileId: string) =>
   `${EXPO_PUBLIC_APPWRITE_ENDPOINT}/storage/buckets/${encodeURIComponent(
     bucketId
@@ -40,6 +43,8 @@ const buildFileUrl = (bucketId: string, fileId: string) =>
   )}`;
 
 export default function PromptFeed() {
+
+  // Define state variables
   const [prompt, setPrompt] = useState<string>("Today’s Prompt");
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -56,6 +61,7 @@ export default function PromptFeed() {
 
         let text: string | null = null;
         try {
+          // Fetch the prompt for today
           const res = await databases.listDocuments(
             DATABASE_ID,
             PROMPTS_COLLECTION_ID,
@@ -85,6 +91,7 @@ export default function PromptFeed() {
 
         if (!cancelled) setPrompt(text);
 
+        // Fetch user posts for the prompt
         const res2 = await databases.listDocuments(
           DATABASE_ID,
           USER_POST_COLLECTION_ID,
@@ -94,6 +101,7 @@ export default function PromptFeed() {
             Query.limit(100),
           ]
         );
+        // Map documents to include image URLs
         const withUrls = res2.documents.map((d: any) =>
           d.imageUrl
             ? d
@@ -111,6 +119,7 @@ export default function PromptFeed() {
     };
   }, []);
 
+  // Prepare grid data for FlatList
   const gridData = useMemo(
     () => posts.map((p) => ({ id: p.$id, uri: p.imageUrl || null })),
     [posts]
@@ -179,7 +188,10 @@ export default function PromptFeed() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: "#111111" },
+  safe: { 
+    flex: 1, 
+    backgroundColor: "#111111" ,
+  },
   container: {
     flex: 1,
     backgroundColor: "#111111",
@@ -200,8 +212,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  title: { color: "#FFE6EC", fontSize: 20, fontWeight: "800" },
-  brandDivider: { height: 3, borderRadius: 3, marginBottom: 12 },
+  title: {
+    color: "#FFE6EC",
+    fontSize: 20,
+    fontWeight: "800"
+  },
+  brandDivider: {
+    height: 3,
+    borderRadius: 3,
+    marginBottom: 12
+  },
   tile: {
     width: TILE,
     height: TILE,
@@ -212,12 +232,23 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#2B2B2B",
   },
-  tileImg: { width: "100%", height: "100%", resizeMode: "cover" },
+  tileImg: {
+    width: "100%",
+    height: "100%",
+    resizeMode: "cover"
+  },
   tileFallback: {
     alignItems: "center",
     justifyContent: "center",
     borderColor: ACCENT,
   },
-  tileEmptyText: { color: ACCENT, fontSize: 12 },
-  loaderWrap: { flex: 1, alignItems: "center", justifyContent: "center" },
+  tileEmptyText: {
+    color: ACCENT,
+    fontSize: 12
+  },
+  loaderWrap: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center"
+  },
 });

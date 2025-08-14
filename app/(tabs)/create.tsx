@@ -1,40 +1,11 @@
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import {
-  CHALLENGES_COLLECTION_ID,
-  DATABASE_ID,
-  EXPO_PUBLIC_APPWRITE_ENDPOINT,
-  EXPO_PUBLIC_APPWRITE_PROJECT_ID,
-  PROMPTS_COLLECTION_ID,
-  USER_POST_BUCKET_ID,
-  USER_POST_COLLECTION_ID,
-} from "@/config/Config";
+import { CHALLENGES_COLLECTION_ID, DATABASE_ID, EXPO_PUBLIC_APPWRITE_ENDPOINT, EXPO_PUBLIC_APPWRITE_PROJECT_ID, PROMPTS_COLLECTION_ID, USER_POST_BUCKET_ID, USER_POST_COLLECTION_ID } from "@/config/Config";
 import * as ImagePicker from "expo-image-picker";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import {
-  ActivityIndicator,
-  Alert,
-  Image,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
-import {
-  Account,
-  Client,
-  Databases,
-  ID,
-  Permission,
-  Query,
-  Role,
-  Storage,
-} from "react-native-appwrite";
+import { ActivityIndicator, Alert, Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { Account, Client, Databases, ID, Permission, Query, Role, Storage } from "react-native-appwrite";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const ACCENT = "#C08EFF";
@@ -47,13 +18,18 @@ const storage = new Storage(client);
 const databases = new Databases(client);
 const account = new Account(client);
 
+
+// Document type for challenges (content from challanges collection in the database)
 type ChallengeDoc = {
   $id: string;
   name?: string;
   title?: string;
 };
 
+
 export default function Create() {
+
+  // State variables for post creation
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
 
@@ -63,9 +39,10 @@ export default function Create() {
   const [localUri, setLocalUri] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
 
-  useEffect(() => {
-    let cancelled = false;
+  // Fetch challenges and prompts on load
 
+  useEffect(() => {
+    // Fetch challenges from the database
     const fetchChallenges = async () => {
       try {
         const res = await databases.listDocuments(
@@ -81,6 +58,7 @@ export default function Create() {
       }
     };
 
+    // Fetch prompts and prefill the title for uploading the post
     const fetchPromptAndPrefill = async () => {
       try {
         const now = new Date();
@@ -126,6 +104,7 @@ export default function Create() {
       }
     };
 
+    let cancelled = false;
     fetchChallenges();
     fetchPromptAndPrefill();
 
@@ -134,15 +113,18 @@ export default function Create() {
     };
   }, [title]);
 
+  // Cached challenge label for displaying in the dropdown
   const challengeLabel = useCallback((c: ChallengeDoc) => {
     return c.name || c.title || c.$id;
   }, []);
 
+  // Cached selected challenge name for dropdown for selection
   const selectedChallengeName = useMemo(() => {
     const found = challenges.find((c) => c.$id === selectedChallengeId);
     return found ? challengeLabel(found) : "Select Challenge";
   }, [challenges, selectedChallengeId, challengeLabel]);
 
+  // Pick an image from the gallery using expo image picker
   const pickImage = useCallback(async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
@@ -156,6 +138,7 @@ export default function Create() {
     }
   }, []);
 
+  // Handle post creation, validating inputs and uploading to Appwrite
   const handleCreatePost = useCallback(async () => {
     if (!selectedChallengeId) {
       Alert.alert("Missing Challenge", "Please select a challenge.");
@@ -184,6 +167,7 @@ export default function Create() {
         size: 0,
       };
 
+      // Set file permissions
       const filePermissions = [
         Permission.read(Role.any()),
         Permission.update(Role.user(userId)),
@@ -198,6 +182,7 @@ export default function Create() {
         filePermissions
       );
 
+      // Set document permissions
       const docPermissions = [
         Permission.read(Role.any()),
         Permission.update(Role.user(userId)),
@@ -205,6 +190,7 @@ export default function Create() {
         Permission.write(Role.user(userId)),
       ];
 
+      // Create the post document
       await databases.createDocument(
         DATABASE_ID,
         USER_POST_COLLECTION_ID,
@@ -220,6 +206,7 @@ export default function Create() {
         docPermissions
       );
 
+      // Show success message
       Alert.alert("Success", "Your post has been created!");
 
       setTitle("");

@@ -26,9 +26,11 @@ import {
 import { Query } from "react-native-appwrite";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+// Define the screenwidth and accent color for the app
 const screenWidth = Dimensions.get("window").width;
 const ACCENT = "#C08EFF";
 
+// Function to build the file URL for Appwrite storage
 const buildFileUrl = (bucketId: string, fileId: string) =>
   `${EXPO_PUBLIC_APPWRITE_ENDPOINT}/storage/buckets/${encodeURIComponent(
     bucketId
@@ -36,6 +38,7 @@ const buildFileUrl = (bucketId: string, fileId: string) =>
     EXPO_PUBLIC_APPWRITE_PROJECT_ID
   )}`;
 
+// Function to parse CSV strings into arrays
 const parseCsv = (s?: string | null) =>
   typeof s === "string" && s.trim().length
     ? s
@@ -44,6 +47,7 @@ const parseCsv = (s?: string | null) =>
         .filter(Boolean)
     : [];
 
+// Type definition for challenge objects
 type ChallengeLite = { $id: string; name?: string; title?: string };
 
 export default function HomeScreen() {
@@ -54,6 +58,7 @@ export default function HomeScreen() {
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
+    // Fetch challenges and prompts on load
     const fetchChallenges = async () => {
       try {
         const res = await databases.listDocuments(
@@ -69,6 +74,7 @@ export default function HomeScreen() {
       } catch {}
     };
 
+    // Fetch prompts on load
     const fetchPrompt = async () => {
       const now = new Date();
       const startOfToday = new Date(
@@ -111,11 +117,13 @@ export default function HomeScreen() {
       }
     };
 
+    // Fetch challenges and prompts on load
     fetchChallenges();
     fetchPrompt();
     fetchPosts();
   }, []);
 
+  // Fetch posts on load
   const fetchPosts = useCallback(async () => {
     if (!refreshing) setLoadingPosts(true);
     try {
@@ -142,11 +150,13 @@ export default function HomeScreen() {
     }
   }, [refreshing]);
 
+  // Refresh the post list
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     fetchPosts();
   }, [fetchPosts]);
 
+  // Prepare post data for rendering
   const postData = useMemo(
     () =>
       posts.map((p) => ({
@@ -308,8 +318,9 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   safe: {
-     flex: 1,
-     backgroundColor: "#111111", },
+    flex: 1,
+    backgroundColor: "#111111",
+  },
   container: {
     flex: 1,
     backgroundColor: "#111111",

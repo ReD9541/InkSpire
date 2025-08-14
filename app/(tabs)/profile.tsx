@@ -25,6 +25,8 @@ import {
 import { Query } from "react-native-appwrite";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+
+// Define constants for layout
 const ACCENT = "#C08EFF";
 const SCREEN_W = Dimensions.get("window").width;
 const H_PADDING = 20;
@@ -32,6 +34,7 @@ const GAP = 6;
 const COLS = 3;
 const TILE = Math.floor((SCREEN_W - H_PADDING * 2 - GAP * (COLS - 1)) / COLS);
 
+// Function to build the file URL for Appwrite storage
 const buildFileUrl = (bucketId: string, fileId: string) =>
   `${EXPO_PUBLIC_APPWRITE_ENDPOINT}/storage/buckets/${encodeURIComponent(
     bucketId
@@ -39,12 +42,15 @@ const buildFileUrl = (bucketId: string, fileId: string) =>
     EXPO_PUBLIC_APPWRITE_PROJECT_ID
   )}`;
 
+  // Function to check if an ID is in a list
 const idInList = (list: string, id: string) => {
   const parts = list.split(/[\s,;|]+/).filter(Boolean);
   return parts.some((p) => p === id);
 };
 
 export default function Profile() {
+
+  // Define state variables
   const [user, setUser] = useState<any>(null);
   const [posts, setPosts] = useState<any[]>([]);
   const [favourites, setFavourites] = useState<any[]>([]);
@@ -84,6 +90,7 @@ export default function Profile() {
         }
       } catch {}
 
+      // Fetch my posts
       const myRes = await databases.listDocuments(
         DATABASE_ID,
         USER_POST_COLLECTION_ID,
@@ -130,6 +137,7 @@ export default function Profile() {
             : doc
         );
 
+        // Set favourites
         setFavourites(favWithUrls);
       } catch {
         setFavourites([]);
@@ -165,6 +173,7 @@ export default function Profile() {
     }, [load])
   );
 
+  // Refresh the profile data
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     await load();
@@ -275,7 +284,7 @@ export default function Profile() {
               <Pressable
                 onPress={() =>
                   router.push({
-                    pathname: "/post",
+                    pathname: "/post/[id]",
                     params: { id: item.$id },
                   })
                 }

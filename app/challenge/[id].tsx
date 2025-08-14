@@ -25,6 +25,7 @@ import {
 import { Query } from "react-native-appwrite";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+// Define constants for layout
 const ACCENT = "#C08EFF";
 const SCREEN_W = Dimensions.get("window").width;
 const H_PADDING = 20;
@@ -32,6 +33,7 @@ const GAP = 6;
 const COLS = 3;
 const TILE = Math.floor((SCREEN_W - H_PADDING * 2 - GAP * (COLS - 1)) / COLS);
 
+// Function to build the file URL for Appwrite storage
 const buildFileUrl = (bucketId: string, fileId: string) =>
   `${EXPO_PUBLIC_APPWRITE_ENDPOINT}/storage/buckets/${encodeURIComponent(
     bucketId
@@ -67,6 +69,7 @@ export default function ChallengeFeed() {
           ]
         );
 
+        // Map documents to include image URLs
         const withUrls = res.documents.map((d: any) =>
           d.imageUrl
             ? d
@@ -86,6 +89,7 @@ export default function ChallengeFeed() {
     };
   }, [id]);
 
+  // Prepare grid data for FlatList
   const gridData = useMemo(
     () => posts.map((p) => ({ id: p.$id, uri: p.imageUrl || null })),
     [posts]
@@ -151,7 +155,10 @@ export default function ChallengeFeed() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: "#111111" },
+  safe: { 
+    flex: 1,
+     backgroundColor: "#111111",
+     },
   container: {
     flex: 1,
     backgroundColor: "#111111",
@@ -165,9 +172,19 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 8,
   },
-  backBtn: { padding: 8 },
-  title: { color: "#FFE6EC", fontSize: 22, fontWeight: "800" },
-  brandDivider: { height: 3, borderRadius: 3, marginBottom: 12 },
+  backBtn: { 
+    padding: 8 ,
+  },
+  title: { 
+    color: "#FFE6EC",
+    fontSize: 22,
+    fontWeight: "800"
+  },
+  brandDivider: {
+    height: 3,
+    borderRadius: 3,
+    marginBottom: 12
+  },
   tile: {
     width: TILE,
     height: TILE,
@@ -178,12 +195,23 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#2B2B2B",
   },
-  tileImg: { width: "100%", height: "100%", resizeMode: "cover" },
+  tileImg: {
+    width: "100%",
+    height: "100%",
+    resizeMode: "cover"
+  },
   tileFallback: {
     alignItems: "center",
     justifyContent: "center",
     borderColor: ACCENT,
   },
-  tileEmptyText: { color: ACCENT, fontSize: 12 },
-  loaderWrap: { flex: 1, alignItems: "center", justifyContent: "center" },
+  tileEmptyText: {
+    color: ACCENT,
+    fontSize: 12
+  },
+  loaderWrap: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center"
+  },
 });

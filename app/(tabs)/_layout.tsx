@@ -2,11 +2,12 @@ import { HapticTab } from "@/components/HapticTab";
 import { LinearGradient } from "expo-linear-gradient";
 import { Tabs } from "expo-router";
 import React from "react";
-import { StyleSheet, View, Image } from "react-native";
+import { Image, StyleSheet, View } from "react-native";
 
 const ACTIVE = "#FFE6EC";
 const INACTIVE = "#8F86A8";
 
+// Tab icon wrapper with glow effect
 function IconWithGlow({
   focused,
   children,
@@ -29,6 +30,7 @@ function IconWithGlow({
   );
 }
 
+// Function to use our custom TabIcon component
 function TabIcon({
   focused,
   src,
@@ -52,6 +54,7 @@ function TabIcon({
   );
 }
 
+// Tab layout component for the app
 export default function TabLayout() {
   return (
     <Tabs

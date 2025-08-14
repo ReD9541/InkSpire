@@ -19,6 +19,8 @@ import {
 import { ID } from "react-native-appwrite";
 
 export default function Register() {
+
+  // Define state variables
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
@@ -31,9 +33,11 @@ export default function Register() {
 
   const user = useContext(AuthContext);
 
+  // Check if the form can be submitted
   const canSubmit =
     validEmail && validPassword && passwordsMatch && acceptedTnC;
 
+    // Handle registration
   const register = async () => {
     try {
       await account.create(ID.unique(), email, password, name);

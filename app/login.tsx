@@ -19,6 +19,7 @@ import {
 } from "react-native";
 
 export default function Login() {
+  // Define state variables
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [validEmail, setValidEmail] = useState(false);
@@ -28,6 +29,7 @@ export default function Login() {
 
   const user = useContext(AuthContext);
 
+  // Handle login
   const login = async () => {
     try {
       await account.createEmailPasswordSession(email, password);

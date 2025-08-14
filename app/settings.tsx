@@ -37,6 +37,7 @@ import {
 } from "react-native-appwrite";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+// Define constants for layout
 const ACCENT = "#C08EFF";
 
 const client = new Client()
@@ -47,6 +48,7 @@ const storage = new Storage(client);
 const databases = new Databases(client);
 const account = new Account(client);
 
+// Function to build the file URL for Appwrite storage
 const buildFileUrl = (bucketId: string, fileId: string) =>
   `${EXPO_PUBLIC_APPWRITE_ENDPOINT}/storage/buckets/${encodeURIComponent(
     bucketId
@@ -54,6 +56,7 @@ const buildFileUrl = (bucketId: string, fileId: string) =>
     EXPO_PUBLIC_APPWRITE_PROJECT_ID
   )}`;
 
+// Define the Profile document type
 type ProfileDoc = {
   $id: string;
   Userid: string;
@@ -61,7 +64,9 @@ type ProfileDoc = {
   profilePicId?: string | null;
 };
 
+// Define the Settings component
 const Settings: React.FC = () => {
+  // Define state variables
   const [user, setUser] = useState<any>(null);
   const [docId, setDocId] = useState<string | null>(null);
   const [bio, setBio] = useState("");
@@ -119,6 +124,7 @@ const Settings: React.FC = () => {
     };
   }, []);
 
+  // Function to pick an image from the gallery
   const pickImage = useCallback(async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images"],
@@ -131,20 +137,25 @@ const Settings: React.FC = () => {
     }
   }, []);
 
+  // Function to handle saving the profile
   const handleSave = useCallback(async () => {
     try {
+      // Ensure the user is authenticated
       const me = await account.get().catch(() => {
         throw new Error("You need to be signed in to update your profile.");
       });
+      // Get the current user ID and name
       const { $id: userId, name: currentName } = me;
       if (!docId) throw new Error("Profile document not initialized yet.");
       setSaving(true);
 
+      // Update the display name if it has changed
       const trimmedName = displayName.trim();
       if (trimmedName && trimmedName !== currentName) {
         await account.updateName(trimmedName);
       }
 
+      // Upload the new profile picture if it has changed
       let newPicId: string | null = null;
       if (localUri) {
         const file = {
@@ -153,12 +164,14 @@ const Settings: React.FC = () => {
           name: "profile.jpg",
           size: 0,
         };
+        // Upload the file to Appwrite storage
         const filePermissions = [
           Permission.read(Role.any()),
           Permission.update(Role.user(userId)),
           Permission.delete(Role.user(userId)),
           Permission.write(Role.user(userId)),
         ];
+        // Create the file in Appwrite storage
         const uploaded = await storage.createFile(
           USER_PROFILE_BUCKET_ID,
           ID.unique(),
@@ -168,6 +181,7 @@ const Settings: React.FC = () => {
         newPicId = uploaded.$id;
       }
 
+      // Update the profile document in the database
       await databases.updateDocument(
         DATABASE_ID,
         USER_PROFILE_COLLECTION_ID,
@@ -179,9 +193,11 @@ const Settings: React.FC = () => {
         }
       );
 
+      // Refresh the user session
       const refreshed = await account.get();
       setUser(refreshed);
 
+      // Update local state with new profile picture
       if (newPicId) {
         setCurrentPicId(newPicId);
         setRemoteUrl(buildFileUrl(USER_PROFILE_BUCKET_ID, newPicId));
@@ -197,6 +213,7 @@ const Settings: React.FC = () => {
     }
   }, [bio, localUri, currentPicId, docId, displayName]);
 
+  // Function to handle signing out
   const handleSignOut = useCallback(async () => {
     try {
       await account.deleteSession("current");
@@ -204,11 +221,13 @@ const Settings: React.FC = () => {
     router.replace("/");
   }, []);
 
+  // cached value for the preview source
   const previewSrc = useMemo(
     () => localUri ?? remoteUrl ?? null,
     [localUri, remoteUrl]
   );
 
+  // Loading state
   if (loading) {
     return (
       <SafeAreaView style={styles.safe} edges={["top"]}>

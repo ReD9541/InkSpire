@@ -69,7 +69,9 @@ export default function PostDetail() {
     setToggling(true);
     try {
       const current = parseIdList(doc.favouritedBy);
-      const next = isFav ? current.filter((x) => x !== me.$id) : [...current, me.$id];
+      const next = isFav
+        ? current.filter((x) => x !== me.$id)
+        : [...current, me.$id];
       const updated = toIdList(next);
 
       const result = await databases.updateDocument(
@@ -99,7 +101,6 @@ export default function PostDetail() {
 
     try {
       setToggling(true);
-
 
       if (doc.imageId) {
         await storage.deleteFile(USER_POST_BUCKET_ID, doc.imageId);
@@ -197,7 +198,11 @@ export default function PostDetail() {
                       accessibilityRole="button"
                       accessibilityLabel="Delete post"
                     >
-                      <Ionicons name="trash-outline" size={20} color="#FF4D4D" />
+                      <Ionicons
+                        name="trash-outline"
+                        size={20}
+                        color="#FF4D4D"
+                      />
                     </Pressable>
                   )}
                 </View>

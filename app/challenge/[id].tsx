@@ -7,7 +7,7 @@ import {
   USER_POST_COLLECTION_ID,
 } from "@/config/Config";
 import { databases } from "@/lib/appwrite";
-import { buildFileUrl, TILE_SIZE } from "@/utils/helper"; 
+import { buildFileUrl, TILE_SIZE } from "@/utils/helper";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router, Stack, useLocalSearchParams } from "expo-router";

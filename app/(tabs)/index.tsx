@@ -283,7 +283,7 @@ export default function HomeScreen() {
                 </ThemedText>
               )
             }
-            style={{ maxHeight: 520 }}
+            style={styles.FlatList}
             showsVerticalScrollIndicator={false}
             refreshControl={
               <RefreshControl
@@ -335,10 +335,10 @@ const styles = StyleSheet.create({
   brandDivider: {
     height: 3,
     borderRadius: 3,
-    marginBottom: 18
+    marginBottom: 18,
   },
   leftPanel: {
-    flex: 1
+    flex: 1,
   },
   sectionTitle: {
     color: "#FFE6EC",
@@ -351,7 +351,7 @@ const styles = StyleSheet.create({
   promptWrapper: {
     borderRadius: 26,
     padding: 2,
-    marginBottom: 24
+    marginBottom: 24,
   },
   promptBox: {
     backgroundColor: "#181818",
@@ -381,10 +381,12 @@ const styles = StyleSheet.create({
   challengeCard: {
     backgroundColor: "#181818",
     paddingHorizontal: 14,
-    paddingVertical: 10,
+    paddingVertical: 2,
     borderRadius: 28,
     marginRight: 12,
     minWidth: screenWidth * 0.22,
+    minHeight: 40,
+    marginBottom: 40,
     justifyContent: "center",
     alignItems: "center",
     borderWidth: 1,
@@ -394,15 +396,22 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     fontSize: 16,
     color: "#FFE6EC",
-    paddingBottom: 16,
+    marginBottom: 0,
+    padding: 0,
+    textAlign: "center",
+    lineHeight: 24,
   },
   postCard: {
     backgroundColor: "#181818",
     borderRadius: 20,
-    padding: 10,
-    marginBottom: 14,
+    padding: 8,
+    marginBottom: 10,
     borderWidth: 1,
     borderColor: "#2B2B2B",
+  },
+  FlatList: {
+    marginBottom: 60,
+    maxHeight: 520,
   },
   postImage: {
     width: "100%",
@@ -413,7 +422,7 @@ const styles = StyleSheet.create({
   },
   postImageFallback: {
     borderWidth: 1,
-    borderColor: "#2B2B2B"
+    borderColor: "#2B2B2B",
   },
   postRow: {
     flexDirection: "row",
@@ -437,14 +446,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#2B2B2B",
   },
-  favText: { 
+  favText: {
     color: "#D2CFE6",
     fontSize: 13,
-    fontWeight: "700"
+    fontWeight: "700",
   },
   loadingText: {
     color: ACCENT,
     fontSize: 14,
-    fontWeight: "500"
-   },
+    fontWeight: "500",
+  },
 });

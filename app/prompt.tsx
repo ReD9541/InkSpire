@@ -7,7 +7,7 @@ import {
   USER_POST_COLLECTION_ID,
 } from "@/config/Config";
 import { databases } from "@/lib/appwrite";
-import { buildFileUrl, TILE_SIZE } from "@/utils/helper"; 
+import { buildFileUrl, TILE_SIZE } from "@/utils/helper";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router, Stack } from "expo-router";
@@ -86,7 +86,7 @@ export default function PromptFeed() {
             Query.limit(100),
           ]
         );
-        // Map documents to include image URLs 
+        // Map documents to include image URLs
         const withUrls = res2.documents.map((d: any) =>
           d.imageUrl
             ? d

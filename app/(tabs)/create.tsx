@@ -1,11 +1,29 @@
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import { CHALLENGES_COLLECTION_ID, DATABASE_ID, PROMPTS_COLLECTION_ID, USER_POST_BUCKET_ID, USER_POST_COLLECTION_ID } from "@/config/Config";
+import {
+  CHALLENGES_COLLECTION_ID,
+  DATABASE_ID,
+  PROMPTS_COLLECTION_ID,
+  USER_POST_BUCKET_ID,
+  USER_POST_COLLECTION_ID,
+} from "@/config/Config";
 import { account, databases, storage } from "@/lib/appwrite";
 import { pickImage } from "@/utils/helper";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useCallback, useEffect, useState } from "react";
-import { ActivityIndicator, Alert, Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import {
+  ActivityIndicator,
+  Alert,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 import { ID, Permission, Query, Role } from "react-native-appwrite";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -239,7 +257,9 @@ export default function Create() {
             />
 
             <ThemedText style={styles.fieldLabel}>Challenge</ThemedText>
-            <View style={[styles.inputDark, styles.dropdown, { paddingRight: 8 }]}>
+            <View
+              style={[styles.inputDark, styles.dropdown, { paddingRight: 8 }]}
+            >
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
@@ -258,7 +278,10 @@ export default function Create() {
                         onPress={() => setSelectedChallengeId(ch.$id)}
                         style={[
                           styles.chip,
-                          active && { backgroundColor: ACCENT, borderColor: ACCENT },
+                          active && {
+                            backgroundColor: ACCENT,
+                            borderColor: ACCENT,
+                          },
                         ]}
                       >
                         <Text style={styles.chipText}>

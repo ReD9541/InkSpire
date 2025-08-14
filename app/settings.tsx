@@ -126,7 +126,7 @@ const Settings: React.FC = () => {
           uri: localUri,
           type: "image/jpeg",
           name: "profile.jpg",
-          size: 0, 
+          size: 0,
         };
         const filePermissions = [
           Permission.read(Role.any()),
@@ -274,7 +274,11 @@ const Settings: React.FC = () => {
               multiline
             />
 
-            <Pressable onPress={handleSave} style={styles.pill} disabled={saving}>
+            <Pressable
+              onPress={handleSave}
+              style={styles.pill}
+              disabled={saving}
+            >
               <LinearGradient
                 colors={["#C08EFF", "#F0A7F5", "#FFCAA7"]}
                 start={[0, 0]}

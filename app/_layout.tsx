@@ -1,20 +1,21 @@
-import { AuthContext } from '@/contexts/AuthContext';
-import { useColorScheme } from '@/hooks/useColorScheme';
-import { account } from '@/lib/appwrite';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
-
-
+import { AuthContext } from "@/contexts/AuthContext";
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { account } from "@/lib/appwrite";
+import {
+  DarkTheme,
+  DefaultTheme,
+  ThemeProvider,
+} from "@react-navigation/native";
+import { useFonts } from "expo-font";
+import { Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import "react-native-reanimated";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/RobotoMono-SemiBold.ttf'),
-      'Sen': require('../assets/fonts/Sen-VariableFont_wght.ttf'),
-
+    SpaceMono: require("../assets/fonts/RobotoMono-SemiBold.ttf"),
+    Sen: require("../assets/fonts/Sen-VariableFont_wght.ttf"),
   });
 
   if (!loaded) {
@@ -23,7 +24,7 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <AuthContext.Provider value={account}>
         <Stack>
           <Stack.Screen name="index" options={{ headerShown: false }} />

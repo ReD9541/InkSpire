@@ -2,7 +2,7 @@ import { ThemedView } from "@/components/ThemedView";
 import { ValidIndicator } from "@/components/ui/ValidIndicator";
 import { AuthContext } from "@/contexts/AuthContext";
 import { account } from "@/lib/appwrite";
-import { isValidEmail, isValidPassword } from "@/utils/helper"; 
+import { isValidEmail, isValidPassword } from "@/utils/helper";
 import { LinearGradient } from "expo-linear-gradient";
 import { Link, router } from "expo-router";
 import { useContext, useEffect, useState } from "react";
@@ -33,14 +33,16 @@ export default function Register() {
   // Validate email and password
   const validEmail = isValidEmail(email);
   const validPassword = isValidPassword(password);
-  const passwordsMatch = password === retypePassword && retypePassword.length > 0;
+  const passwordsMatch =
+    password === retypePassword && retypePassword.length > 0;
 
   // Check if the form can be submitted
-  const canSubmit = validEmail && validPassword && passwordsMatch && acceptedTnC;
+  const canSubmit =
+    validEmail && validPassword && passwordsMatch && acceptedTnC;
 
   // Handle registration
   const register = async () => {
-    if (!canSubmit) return; 
+    if (!canSubmit) return;
     try {
       await account.create(ID.unique(), email, password, name);
       const session = await user.createEmailPasswordSession(email, password);

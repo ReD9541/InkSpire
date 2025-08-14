@@ -127,7 +127,7 @@ app/
 git clone https://github.com/ReD9541/InkSpire.git
 ```
 
-2. **Install dependencies**
+2. **Install the dependencies**
 
 ```bash
 npm install

@@ -6,8 +6,9 @@ import { account } from "@/lib/appwrite";
 import { isValidEmail, isValidPassword } from "@/utils/helper";
 import { LinearGradient } from "expo-linear-gradient";
 import { Link, router } from "expo-router";
-import { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
+  Alert,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -18,12 +19,13 @@ import {
   TextInput,
   View,
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Login() {
   // Define state variables
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [auth, setAuth] = useState(null);
+  const [auth, setAuth] = useState<any>(null);
   const [rememberMe, setRememberMe] = useState(false);
 
   const user = useContext(AuthContext);
@@ -36,12 +38,18 @@ export default function Login() {
   const login = async () => {
     try {
       await account.createEmailPasswordSession(email, password);
+
+      // Persist Remember Me choice
+      await AsyncStorage.setItem("rememberMe", rememberMe ? "true" : "false");
+
+      // Update auth/user context
       setAuth(await user.get());
     } catch (error: any) {
-      console.log("Login failed:", error.message || error);
+      Alert.alert("Error", error?.message || "Login failed");
     }
   };
 
+  // Navigate to tabs after successful auth
   useEffect(() => {
     if (auth) {
       router.navigate("/(tabs)");
@@ -96,6 +104,8 @@ export default function Login() {
           <Pressable
             style={styles.rememberRow}
             onPress={() => setRememberMe(!rememberMe)}
+            accessibilityRole="checkbox"
+            accessibilityState={{ checked: rememberMe }}
           >
             <View
               style={[styles.checkbox, rememberMe && styles.checkedCheckbox]}

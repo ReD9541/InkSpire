@@ -7,6 +7,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Link, router } from "expo-router";
 import { useContext, useEffect, useState } from "react";
 import {
+  Alert,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -48,7 +49,8 @@ export default function Register() {
       const session = await user.createEmailPasswordSession(email, password);
       setAuth(session);
     } catch (error) {
-      console.error("Registration failed:", error);
+      const message = error instanceof Error ? error.message : "Registration failed";
+      Alert.alert("Error", message);
     }
   };
 
@@ -112,6 +114,7 @@ export default function Register() {
             style={styles.input}
             placeholder="Create Password"
             placeholderTextColor="#999"
+            textContentType="none"
             secureTextEntry
             value={password}
             onChangeText={setPassword}
@@ -127,6 +130,7 @@ export default function Register() {
             style={styles.input}
             placeholder="Retype Password"
             placeholderTextColor="#999"
+            textContentType="none"
             secureTextEntry
             value={retypePassword}
             onChangeText={setRetypePassword}

@@ -100,7 +100,7 @@ export default function HomeScreen() {
       }
     };
 
-    // Fetch challenges and prompts on load
+    // Fetch challenges and prompts on load 
     fetchChallenges();
     fetchPrompt();
     fetchPosts();
@@ -182,7 +182,7 @@ export default function HomeScreen() {
           </ThemedText>
 
           <Pressable
-            onPress={() => router.push("../prompt")}
+            onPress={() => router.replace("../prompt")}
             style={{ borderRadius: 26 }}
           >
             <LinearGradient
@@ -213,7 +213,7 @@ export default function HomeScreen() {
             keyExtractor={(item) => item.$id}
             renderItem={({ item }) => (
               <Pressable
-                onPress={() => router.push(`../challenge/${item.$id}`)}
+                onPress={() => router.replace(`../challenge/${item.$id}`)}
               >
                 <View style={styles.challengeCard}>
                   <ThemedText
@@ -242,7 +242,7 @@ export default function HomeScreen() {
             renderItem={({ item }) => (
               <Pressable
                 style={styles.postCard}
-                onPress={() => router.push(`../post/${item.id}`)}
+                onPress={() => router.replace(`../post/${item.id}`)}
               >
                 {item.imageUrl ? (
                   <Image

@@ -180,7 +180,7 @@ export default function Profile() {
             <Pressable
               style={styles.settingsBtn}
               hitSlop={10}
-              onPress={() => router.push("/settings")}
+              onPress={() => router.replace("/settings")}
             >
               <Image
                 source={require("../../assets/icons/settings-icon.png")}
@@ -262,7 +262,7 @@ export default function Profile() {
             renderItem={({ item }) => (
               <Pressable
                 onPress={() =>
-                  router.push({
+                  router.replace({
                     pathname: "/post/[id]",
                     params: { id: item.$id },
                   })

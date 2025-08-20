@@ -1,7 +1,7 @@
 import { ThemedText } from "@/components/ThemedText";
 import { LinearGradient } from "expo-linear-gradient";
-import { Link } from "expo-router";
-import React from "react";
+import { Link, router } from "expo-router";
+import React, { useEffect } from "react";
 import {
   Dimensions,
   Image,
@@ -14,11 +14,37 @@ import {
   View,
 } from "react-native";
 
+import { account } from "@/lib/appwrite";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 // Define constants for layout
 const { height: screenHeight } = Dimensions.get("window");
 const HERO_IMAGE_HEIGHT = screenHeight * 0.41;
 
 export default function Landing() {
+  useEffect(() => {
+    const init = async () => {
+      try {
+        const remembered = (await AsyncStorage.getItem("rememberMe")) === "true";
+
+        if (!remembered) {
+          try {
+            await account.deleteSessions();
+          } catch {
+          }
+        }
+        try {
+          await account.get();
+          router.replace("/(tabs)");
+        } catch {
+        }
+      } catch {
+      }
+    };
+
+    init();
+  }, []);
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: "#111111" }}

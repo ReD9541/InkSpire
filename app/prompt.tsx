@@ -145,7 +145,7 @@ export default function PromptFeed() {
             contentContainerStyle={{ paddingBottom: 16 }}
             renderItem={({ item }) => (
               <Pressable
-                onPress={() => router.push(`../post/${item.id}`)}
+                onPress={() => router.replace(`../post/${item.id}`)}
                 style={[styles.tile, !item.uri && styles.tileFallback]}
               >
                 {item.uri ? (
